@@ -38,15 +38,16 @@ foobar.singularize('phenomena')
 
 
 ## Distribution of tasks.
-Project coordinator: Alex Teruel
+Project coordinator: Àlex Teruel
 
-- Simulation (Fortran program): Working together
+- Main program (Fortran program): Working together
 - Initial state (module): Oliver Loveday
 - Boundary conditions (module): Adrià Calzada
 - Forces (module): Daniel Conde
 - Integration (module): Àlex Teruel
+- Radial distribution function (Fortran program): Àlex Teruel
 - Statistics (python program): Daniel Conde
-- Visualisation of Results (makefile + gnuplot+results analysis): Joint work
+- Visualisation of Results (makefile + gnuplot + results analysis): Joint work
 
 The joint work tasks will be carried out (to a greater extent) by those members who are more advanced in their corresponding tasks.
 
