@@ -1,9 +1,9 @@
 #  Van der Waals gas of particle
 
  Van der Waals gas of particle is a Fortran/Python program that allow us to study the interaction of hard sppheres subjected to a Leenard-Jones potential
-
+<p align="center">
 ![giphy](https://user-images.githubusercontent.com/66941005/155822626-9a3d667d-cf97-44cb-b0a4-29d1b485c6d4.gif)
-
+</p>
 
 ## Installation
 
