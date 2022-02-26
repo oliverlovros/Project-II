@@ -95,3 +95,36 @@ subroutine Kinetic_Energy(nparts,velocity,kin_E)
     return
    
 end subroutine Kinetic_Energy
+
+
+
+
+
+subroutine pressure(n,rho,temp,l,cutoff,pos,pres)
+
+    implicit none
+    integer :: n
+    double precision :: rho, temp, l, cutoff, pos(n,3)
+    double precision :: pres
+    integer :: i, j
+    double precision :: dr(3), dr2, force(3)
+
+    pres = 0.d0
+    do i=1,n-1
+        do j=i+1,n
+            dr = pos(i,:)-pos(j,:)
+            call pbc(dr,l)
+            dr2 = sum(dr**2)
+            if (dr2 < cutoff**2) then
+                force = (48.d0/dr2**7 - 24.d0/dr2**4)*dr
+                pres = pres + sum(dr*force)
+            end if
+        end do
+    end do
+    pres = rho*temp + pres/(3.d0*l**3)
+
+    return
+
+end subroutine pressure
+
+
