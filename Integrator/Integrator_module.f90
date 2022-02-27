@@ -5,7 +5,44 @@ module Integrator_module
 
     ! functions and subroutines
     contains
-    
+   
+    subroutine therm_Andersen(nparts,velocities,nu,sigma)
+
+    !------------------------------------------------------------------------------------------------------------------------------!
+    ! Informació
+    ! La subrutina aplica el termostat Andersen sobre un sistema de partícules.
+    ! Variables d'entrada:
+    !   nparts: número de partícules del sistema
+    !   nu: probabilitat d'acceptar un canvi de velocitat
+    !   sigma: desviació de la distribució
+    ! Variables d'entrada i sortida (modificades):
+    !   velocities(nparts,3): matriu que conté la velocitat en cada direcció de les partícules del sitema
+    !------------------------------------------------------------------------------------------------------------------------------!
+
+       implicit none
+       ! variables d'entrada i sortida
+       integer :: nparts
+       double precision :: nu, sigma
+       double precision :: velocities(nparts,3)
+       ! variables internes subrutina
+       double precision, parameter :: pi = 4d0*datan(1.d0)
+       double precision :: nu_n, x1, x2, x3, x4
+       integer :: n
+
+       do n = 1, nparts
+           call random_number(nu_n)
+           ! si el nombre aleatori es menor a nu, calculem noves velocitats
+           if (nu_n < nu) then
+               ! les gaussianes les calculem usant el mètode box Muller
+               call random_number(x1); call random_number(x1); call random_number(x3); call random_number(x4)
+               velocities(n,1) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dcos(2.d0*pi*x2)
+               velocities(n,2) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dsin(2.d0*pi*x2)
+               velocities(n,3) = sigma*dsqrt(-2.d0*(dlog(1.d0-x3)))*dcos(2.d0*pi*x4)
+           end if
+       end do
+
+    end subroutine therm_Andersen
+ 
     subroutine velocity_verlet(nparts,box_L,cutoff,dt,positions,velocities,pot_E,forces)
 
      !-----------------------------------------------------------------------------------------------------------------------------!
