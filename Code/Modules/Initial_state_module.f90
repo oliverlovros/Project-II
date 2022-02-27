@@ -1,5 +1,5 @@
 !---------------------------------------------------------Initial state module----------------------------------------------------------!
-module init_state
+module Initial_state_module
 
     implicit none
     
@@ -104,4 +104,4 @@ module init_state
     
     end subroutine bimodal_vel
 
-end module init_state
+end module Initial_state_module

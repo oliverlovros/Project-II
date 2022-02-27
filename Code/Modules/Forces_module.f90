@@ -1,7 +1,7 @@
 module forces_module
-use constantes
 
-
+use Constants_module
+implicit none
 
 contains
 

@@ -40,7 +40,11 @@ program Main
     !   gofr: funcio de distribució radial normalitzada
     !------------------------------------------------------------------------------------------------------------------------------!
 
-    use constantes
+    use Constants_module
+    use Initial_state_module
+    use Pbc_module
+    use Forces_module
+    use Integrator_module
     implicit none
     ! fitxers
     integer :: opt1, opt2
@@ -146,3 +150,6 @@ program Main
     if (opt1 == 1) close(13)
 
 end program Main
+
+!**********************************************************************************************************************************!
+! read input file
