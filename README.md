@@ -26,12 +26,9 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#Installation">Installation</a>
-    </li>
-    <li>
-      <a href="#Distribution-of-tasks">Distribution of tasks</a>
-    </li>
+    <li><a href="#Pre-requirements">Pre-requirements</a></li>
+    <li><a href="#Installation">Installation</a></li>
+    <li><a href="#Distribution-of-tasks">Distribution of tasks</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -42,6 +39,32 @@
 </details>
 
 
+
+<!-- Pre-requirements -->
+### Pre-requirements 📋
+
+_Que cosas necesitas para instalar el software y como instalarlas_
+
+```
+sudo apt install python3.8
+sudo apt-get install gfortran
+```
+You also need/want to install VMD software
+For installation following the steps below: Download it from (http://www.ks.uiuc.edu/Research/vmd/) Then in the terminal type:
+```
+cd Downloads
+  tar -zxvf vmd-1.9.1.bin.LINUXAMD64.opengl.tar.gz
+```
+This will extract the folder to your downloads folder. You can then just
+```
+cd vmd-1.9.1
+
+./configure LINUXAMD64
+
+cd src
+
+sudo make install
+```
 
 <!-- Installation -->
 ## Installation
