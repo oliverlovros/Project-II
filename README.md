@@ -67,7 +67,7 @@ sudo make install
 ```
 
 <!-- Installation -->
-## Installation
+## Installation 🔧
 
 Use  to install the program.
 
@@ -76,7 +76,7 @@ Ex:
 pip install foobar
 ```
 <!-- Usage -->
-## Usage
+## Usage ⚙️
 
 ```make program...
 
@@ -94,7 +94,7 @@ foobar.pluralize('goose')
 foobar.singularize('phenomena')
 ```
 <!-- DISTRIBUTION OF TASKS -->
-## Distribution of tasks.
+## Distribution of tasks ✒️ 
 Project coordinator: Àlex Teruel
 
 - Main program (Fortran program): Working together
@@ -108,9 +108,12 @@ Project coordinator: Àlex Teruel
 
 The joint work tasks will be carried out (to a greater extent) by those members who are more advanced in their corresponding tasks.
 
+## Wiki 📖
+
+Puedes encontrar mucho más de cómo utilizar este proyecto en nuestra [Wiki](https://github.com/Eines-Informatiques-Avancades/Project-II/wiki)
 
 <!-- CONTRIBUTING -->
-## Contributing
+## Contributing 🖇️
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
