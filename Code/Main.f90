@@ -96,8 +96,8 @@ program Main
     cutoff = cutoff*box_l
 
     ! geometria
-    if (geometria == "SC ") call sc_lattice(nparts,rho,positions,box_l,box_a,box_m)
-    if (geometria == "FCC") call fcc_lattice(nparts,rho,positions,box_l,box_a,box_m)
+    if (geometry == "SC ") call sc_lattice(nparts,rho,positions,box_l,box_a,box_m)
+    !if (geometry == "FCC") call fcc_lattice(nparts,rho,positions,box_l,box_a,box_m)
 
     ! iniciamos velocidades
     if (bimodal == "Si") then
@@ -154,6 +154,7 @@ program Main
     do i = 1, nparts
         write(15,*) positions(i,1), positions(i,2), positions(i,3)
     end do
+
     close(15)
     close(12)
     close(13)
@@ -185,9 +186,9 @@ subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, 
     double precision, intent(out) :: time_step ! ps
     integer, intent(out) :: steps ! steps of simulation
     integer, intent(out) :: measure_steps ! steps between two measures
-    character(len=50), intent(out) :: observables_file ! energy, temperature, etc evolution
-    character(len=50), intent(out) :: MSD_file ! mean square displacement
-    character(len=50), intent(out) :: positions_file ! histogram of particles positions
+    character(len=80), intent(out) :: observables_file ! energy, temperature, etc evolution
+    character(len=80), intent(out) :: MSD_file ! mean square displacement
+    character(len=80), intent(out) :: positions_file ! histogram of particles positions
     ! others
     integer :: my_unit
 

@@ -1,6 +1,7 @@
 module forces_module
 
 use Constants_module
+use pbc_module
 implicit none
 
 contains

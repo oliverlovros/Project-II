@@ -1,6 +1,8 @@
 module Integrator_module
     
     ! parameters
+    use pbc_module
+    use forces_module
     implicit none
 
     ! functions and subroutines

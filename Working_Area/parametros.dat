@@ -1,0 +1,54 @@
+***************************************************************************************************
+*                                                                                                 *
+*                             Dinámica molecular sistema Lennard-Jones                            *
+*                                                                                                 *
+***************************************************************************************************
+
+--------------------------------------- Datos del sistema -----------------------------------------
+
+Número de partículas:
+125
+Geometría (SC/FCC):
+SC
+Densidad (g/cm^3):
+0.18
+Masa (g/mol):
+4.0026
+Parámetro sigma LJ (A):
+2.576
+parámetro eps LJ (KJ/mol):
+0.084765672
+Cutoff (respecto longitud del sistema, entre 0 y 0.5):
+0.4
+Temperatura ambiente (K):
+300.0
+
+------------------------------------- Datos de la simulación --------------------------------------
+
+Temperatura inicial (K):
+1000
+Bimodal (en caso negativo vel=0) (Si/No):
+Si
+Desordenar el sistema (Si/No):
+No
+Termostato (Si/No):
+Si
+Método de integración (Euler/Verlet):
+Verlet
+Paso temporal (ps):
+0.5
+Número de pasos:
+100
+Pasos entre mediciones:
+1
+
+-------------------------------------------- Ficheros ---------------------------------------------
+
+Evolución temporal observables:
+"temp_evol.dat"
+Desplazamiento cuadrático medio:
+"MSD.dat"
+Posiciones estado final:
+"positions.dat"
+
+***************************************************************************************************
