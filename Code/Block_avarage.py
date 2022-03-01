@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-def blockAverage(datos,tamaño_bloque_maximo=False,grafica=True):
+import sys #para seleccionar el archivo
+input_file=sys.argv[1]
+def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
     "Método para calcular incertidumes con datos correlacionados temporalmente, block-avarage. Sería ideal engadir o método de bootstraping para comparar"
     Nobs = len(datos) # número total de datos, dar un array ou lista
     tamaño_bloque_minimo=1 # mínimo tamaño de bloque, corresponde a non facer block_avarage
@@ -31,21 +33,48 @@ def blockAverage(datos,tamaño_bloque_maximo=False,grafica=True):
         bloqueCtr=bloqueCtr+1
     tamaño_bloque= np.arange(tamaño_bloque_minimo,tamaño_bloque_maximo)
     if grafica:
+        plt.title(nome,fontsize=30)
         plt.errorbar(tamaño_bloque, incertidume,barra_erros, marker='o',ls='None',markersize=8, capsize=6)
-        plt.xlabel('Tamaño do bloque (Número de datos por bloque, que deben ter todos o mesmo tamaño)')
-        plt.ylabel('Desviación estándar')
+        plt.xlabel('Tamaño do bloque',fontsize=26)#(Número de datos por bloque, que deben ter todos o mesmo tamaño)
+        plt.ylabel('Desviación estándar',fontsize=26)
+        plt.xticks(fontsize=22)
+        plt.yticks(fontsize=22)
         plt.show()
         plt.errorbar(tamaño_bloque, Media_bloque, incertidume,marker='o',ls='None',markersize=8, capsize=6,color='Orange')
-        plt.ylabel('Media')
-        plt.xlabel('Tamaño do bloque')
-        plt.show()
-        plt.tight_layout()
+        plt.ylabel('Media',fontsize=26)
+        plt.title(nome,fontsize=30)
+        plt.xticks(fontsize=22)
+        plt.yticks(fontsize=22)
+        plt.xlabel('Tamaño do bloque',fontsize=26)
         plt.show()
         print(f"Valor medio = {Media_bloque[-1]:.3f} +/- {incertidume[-1]:.3f}")
     return tamaño_bloque, Media_bloque, incertidume
     
-dato = np.loadtxt('output.txt',skiprows=2)
-#print(dato)
-E=dato[:,0]
+##########################################
+#Añadir a posteriori
+print('Se va a empezar con el análisis estadístico')
+print('Desea seleccionar el número de bloques?i[yes/no]')
+condicion=input()
+if str(condicion)=='yes' or str(condicion)=='si' or str(condicion)=='Yes'or str(condicion)=='YES' or str(condicion)=='SI':
+    print('Cuantos bloques quiere selecciona (número entero, sino se realizará una aproximación)?')
+    bloque=int(input())
+else:
+    bloque=False
 
-blockAverage(E,tamaño_bloque_maximo=False,grafica=True)
+
+###########################################
+dato = np.loadtxt(input_file,skiprows=2)
+#print(dato)
+Time=dato[:,0] # Primera columna)
+Kinetic=dato[:,1]
+Potential=dato[:,2]
+Total_energy=dato[:,3]
+Temperature=dato[:,4]
+Pressure=dato[:,5]
+
+blockAverage(Kinetic,'Kinetic Energy',bloque,grafica=True)
+blockAverage(Potential,'Potential Energy',bloque,grafica=True)
+blockAverage(Total_energy,'Total Energy',bloque,grafica=True)
+blockAverage(Temperature,'Temperature',bloque,grafica=True)
+blockAverage(Pressure,'Pressure',bloque,grafica=True)
+

@@ -68,7 +68,7 @@ program Main
     double precision, allocatable :: positions(:,:), velocities(:,:), forces(:,:)
     double precision, allocatable :: oldpos(:,:)
     double precision :: cutoff, sigma, nu
-    integer :: i
+    integer :: i,l
 
     ! leer parametros del fichero de entrada
     infile = "parametros.dat"
@@ -79,6 +79,8 @@ program Main
     open(12,file=outfile)
     open(13,file=outfile1)
     open(15,file=outfile2)
+    !Escribe tray para poder leerse en vmd
+    open(36,file='vmd.xyz')
 
     ! vectores
     allocate(positions(nparts,3), oldpos(nparts,3), velocities(nparts,3), forces(nparts,3))
@@ -132,6 +134,16 @@ program Main
     dr2 = 0.d0
     oldpos = positions
     do i  = 1, t_steps
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !Escribir trayectoria en xyz para leerse en VMD!
+    write(36,*) nparts
+    write(36,*)
+    do l=1,nparts
+          write(36,*) 'A', positions(l,1), positions(l,2), positions(l,3)
+    end do
+
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ! siguiente punto
         time = time + dt
         call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,positions,velocities,pot,forces)
@@ -158,7 +170,7 @@ program Main
     close(15)
     close(12)
     close(13)
-
+    close(36)!cerrar vmd.xyz
 end program Main
 
 !**********************************************************************************************************************************!

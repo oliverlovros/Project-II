@@ -42,14 +42,18 @@ mover:
 	mv positions.dat  $(OTHERDIR_RESULTS)     
 
 
-
 clean:
+	rm $(OTHERDIR_MAIN)/*o
+	rm *mod
+
+
+clean_all:
 	rm $(OTHERDIR_MAIN)/*o
 	rm $(OTHERDIR_RESULTS)/*dat 
 	rm *mod
 
 estadistica:
-	python Block_avarage.py P2_rho08.dat
+	python $(OTHERDIR_MAIN)/Block_avarage.py $(OTHERDIR_RESULTS)/temp_evol.dat
 vmd:
 	vmd vmd.xyz
 

@@ -35,38 +35,40 @@ subroutine LJ_potential(npart,positions,cutoff,length,pbc_on, Upot, force)
     ! iniciamos la fuerza
     force = 0.d0
     ! bucle que recorre todas las interacciones
+     !$omp parallel private(dr,dr6,dr8, dr12, dr14,dr2) 
+!$omp do schedule(dynamic,4)  reduction(+:Upot) reduction(+:force) 
     do i = 1, npart-1
         do j = i+1, npart
-        ! calculo de la diferencia entre las dos posciones
+            ! calculem la diferencia entre les dos posicions
             do k = 1, 3
                 dr(k) = positions(i,k) - positions(j,k)
             end do
-            ! aplicamos condiciones periodicas de contorno 
+            ! apliquem condicions periodiques de contorn
             if(pbc_on == 1) call pbc(dr,length)
-            ! calculamos la distancia
+            ! calculem la distancia
             dr2 = dr(1)**2 + dr(2)**2 + dr(3)**2
-            ! calculamos la contribución si está dentro del cut-off
+            ! si la distancia es inferior a cutoff calculem la contribucio
             if(dr2 <= cutoff**2) then
                 dr6 = dr2**3
                 dr8 = dr2**4
                 dr12 = dr2**6
                 dr14 = dr2**7
-                ! energia potencial
-                Upot = Upot + 4.d0*(1.d0/dr12 - 1.d0/dr6) - 4.d0*( 1.d0/cutoff**12 - 1.d0/cutoff**6)
-                ! fuerza particula i
+                ! energia potencial he quitado el upot +
+                Upot = Upot+4.d0*(1.d0/dr12 - 1.d0/dr6) - 4.d0*( 1.d0/cutoff**12 - 1.d0/cutoff**6)
+                ! força particula i
                 force(i,1) = force(i,1) + (48.d0/dr14 - 24.d0/dr8)*dr(1)
                 force(i,2) = force(i,2) + (48.d0/dr14 - 24.d0/dr8)*dr(2)
                 force(i,3) = force(i,3) + (48.d0/dr14 - 24.d0/dr8)*dr(3)
-                ! fuerza particula j
+                ! força particula j
                 force(j,1) = force(j,1) - (48.d0/dr14 - 24.d0/dr8)*dr(1)
                 force(j,2) = force(j,2) - (48.d0/dr14 - 24.d0/dr8)*dr(2)
                 force(j,3) = force(j,3) - (48.d0/dr14 - 24.d0/dr8)*dr(3)
             end if
         end do
     end do
-
-    return
-   
+    !$omp end do
+    !$omp end parallel
+    return 
 end subroutine LJ_potential
 
 subroutine Kinetic_Energy(nparts,velocity,kin_E)
