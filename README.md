@@ -77,9 +77,13 @@ pip install foobar
 ```
 <!-- Usage -->
 ## Usage ⚙️
+In the Working_area directory
+```
+#make usage
+make modulos
+make all
 
-```make program...
-
+#to visualize...
 vmd (explain)
 python
 import foobar
