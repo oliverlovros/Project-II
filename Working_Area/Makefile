@@ -42,11 +42,13 @@ mover:
 	mv positions.dat  $(OTHERDIR_RESULTS)     
 
 
+.PHONY: clean
 clean:
 	rm $(OTHERDIR_MAIN)/*o
 	rm *mod
 
 
+.PHONY: clean_all
 clean_all:
 	rm $(OTHERDIR_MAIN)/*o
 	rm $(OTHERDIR_RESULTS)/*dat 

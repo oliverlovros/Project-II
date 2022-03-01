@@ -1,11 +1,13 @@
 program radial_distribution_function
 
+    use Constants_module
+    use Pbc_module
     implicit none
     character(len=80) :: infile, outfile
     integer :: i, j, part, maxi, nparts, indice
-    double precision :: rmax, dr, rho, integral
+    double precision :: rmax, dr, rho, integral, box_l
     double precision, allocatable :: positions(:,:), distances(:), gofr(:), vol(:)
-    double precision, parameter :: pi = 4.d0*datan(1.d0)
+    double precision :: diff(3)
 
     print*, 'Introduce el fichero de entrada.'
     read(*,*) infile
@@ -15,7 +17,7 @@ program radial_distribution_function
     print*,'Introduce el numero de cajas.'
     read(*,*) maxi
     open(12,file=infile)
-    read(12,*) nparts, rho
+    read(12,*) nparts, box_l, rho
     allocate(positions(nparts,3), distances(nparts*(nparts-1)/2), vol(maxi), gofr(maxi))
     do i = 1, nparts
         read(12,*) positions(i,1), positions(i,2), positions(i,3)
@@ -25,7 +27,9 @@ program radial_distribution_function
     do i = 1,nparts-1
         do j = i+1, nparts
             part = part + 1
-            distances(part) = dsqrt(sum((positions(i,:)-positions(j,:))**2))
+            diff = positions(i,:)-positions(j,:)
+            call pbc(diff,box_l)
+            distances(part) = dsqrt(sum(diff**2))
         end do
     end do
     rmax = maxval(distances)*1.03d0

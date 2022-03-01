@@ -1,0 +1,54 @@
+***************************************************************************************************
+*                                                                                                 *
+*                    Molecular Dynamics of a Lennard-Jones Particle System                        *
+*                                                                                                 *
+***************************************************************************************************
+
+--------------------------------------- System Parameters -----------------------------------------
+
+Number of particles (use x^3 for a better performance (1,8,27,64,125,216,343,512,729,1000,...)):
+125
+Geometry (SC/FCC):
+SC
+Density (g/cm^3):
+1.352
+Mass (g/mol):
+40.0
+LJ sigma parameter (A):
+3.4
+LJ epsilon parameter (KJ/mol):
+0.998
+Cutoff (over the length of the system, entre 0 y 0.5):
+0.5
+Room temperature (K):
+240.0
+
+----------------------------------------- Simualation Data ----------------------------------------
+
+Initial temperature (K):
+0.d0
+Bimodal (Yes/No):
+No
+Disordered system (Yes/No):
+No
+Thermostat (Yes/No):
+Yes
+Integration method (Euler/Verlet):
+Verlet
+Temporal step (ps):
+0.00025
+Number of steps:
+1000000
+Steps between two measures:
+1000
+
+-------------------------------------------- Files ------------------------------------------------
+
+Time evolution:
+"temp_evol.dat"
+Mean square displacement:
+"MSD.dat"
+Final state positions:
+"positions.dat"
+
+***************************************************************************************************

@@ -87,7 +87,7 @@ module Integrator_module
     
     end subroutine velocity_verlet
 
-    subroutine velocity_verlet_andersen(nparts,box_L,cutoff,nu,sigma,dt,positions,velocities,pot_E,forces)
+    subroutine velocity_verlet_andersen(nparts,box_L,cutoff,nu,sigma,dt,positions,velocities,pot_E,forces,therm_on)
 
      !-----------------------------------------------------------------------------------------------------------------------------!
      ! Codi escrit per Alex Teruel
@@ -110,7 +110,7 @@ module Integrator_module
     
         implicit none
         ! variables d'entrada i sortida
-        integer :: nparts
+        integer :: nparts, therm_on
         double precision :: box_L, cutoff, nu, sigma, dt
         double precision :: positions(nparts,3), velocities(nparts,3)
         double precision :: pot_E, forces(nparts,3)
@@ -128,7 +128,7 @@ module Integrator_module
         ! reasignem valors de les forces
         forces = newforces
         ! apliquem el termostat
-        call therm_Andersen(nparts,velocities,nu,sigma)
+        if(therm_on == 1) call therm_Andersen(nparts,velocities,nu,sigma)
     
         return
     

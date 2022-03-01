@@ -1,91 +1,70 @@
 program Main
 
-    !------------------------------------------------------------------------------------------------------------------------------!
-    ! Codi escrit per Alex Teruel
-    ! Informació
-    ! El programa simula un sistema de N partícules en contacte amb un bany tèrmic que interaccionen mitjançant un potencial de 
-    ! Lennard-Jones.
-    ! Les variables d'entrada es llegeixen en un fitxer que el programa demana al executar-se.
-    ! El format del fitxer d'entrada ha de ser:
-    !   nparts rho temp
-    !   dt t_steps k_steps
-    !   mass epsilon sigma
-    !   outfile
-    !   opt1 outfile1
-    !   opt2 dr outfile2
-    ! Les variables d'entrada són:
-    !   nparts: número de partícules
-    !   rho: la densitat en unitats reduides
-    !   temp: la temperatura ambient en unitats reduides
-    !   dt: el salt temporal en unitats reduides
-    !   t_steps: els salts temporals totals d'integració
-    !   k_steps: els salts temporals entre dos mesures
-    !   mass: massa de les partícules en g/mol
-    !   LJ_eps: paràmetre energia LJ en kj/mol
-    !   LJ_sig: paràmetre longitud LJ en ang
-    !   outfile: nom del fitxer on volem guardar els resultats
-    !   opt1: 1 si volem calcular el desplaçament quadràtic mitjà, 0 en cas contrari
-    !   outfile1: nom del fitxer on volem guardar la evolució temporal del desplaçament quadràtic mitjà
-    !   opt2: 1 si volem calcular la funció de distribució radial, 0 en cas contrari
-    !   outfile2: nom del fitxer on volem guardar la funció de distribució radial
-    ! Les variables de sortida són:
-    !   time: el instant de temps en picosegons
-    !   kin/nparts: energia cinètica per partícula en kj/mol
-    !   pot/nparts: energia potencial per partícula en kj/mol
-    !   tot/nparts: energia total per partícula en kj/mol
-    !   tempi: temperatura instantània en k
-    !   pres: pressió en Pa
-    !   dr2: desplaçament quadràtic mitjà en ang^2
-    !   dr: distància entre partícules ang
-    !   gofr: funcio de distribució radial normalitzada
-    !------------------------------------------------------------------------------------------------------------------------------!
-
+    ! modules
     use Constants_module
     use Initial_state_module
     use Pbc_module
     use Forces_module
     use Integrator_module
+
     implicit none
-    ! fitxers
-    integer :: opt1, opt2
-    character(len=80) :: infile, outfile, outfile1, outfile2
-    ! variables d'entrada
+    ! files
+    character(len=80) :: infile, outfile1, outfile2, outfile3
+    ! parameters
     integer :: nparts
-    double precision :: rho, temp, temp_init
-    integer :: t_steps, k_steps
-    double precision :: dt
-    double precision :: mass, LJ_eps, LJ_sig
-    character(len=3) :: geometry
-    character(len=2) :: bimodal, disorder_system, thermostat
-    character(len=6) :: integrator
-    ! variables de sortida
-    double precision :: time, kin, pot, tot, tempi, pres
-    double precision:: dr2
-    ! altres variables
+    character(len=3) :: geometry          ! geometry of th system: SC/FCC
+    double precision :: in_rho            ! density of the system in g/cm^3
+    double precision :: mass              ! molecular mass of the system in g/mol
+    double precision :: LJ_sig            ! Lennard-Jones length parameter in A
+    double precision :: LJ_eps            ! Lennard-Jones energy parameter in KJ/mol
+    double precision :: cutoff            ! radius of cutoff divided by the length of the cell
+    double precision :: in_temp           ! room temperature in K
+    double precision :: in_temp_init      ! initial temperature of the system in K
+    character(len=3) :: bimodal           ! if "Yes" the system initialize velocities using a bimodal distribution associated with 
+    !                                       the initial temperature 
+    character(len=3) :: disordered_system ! if "Yes" the system realizes 100000 steps at initial temperature
+    character(len=3) :: thermostat        ! if "Yes" the system uses a thermostat at room temperature
+    character(len=6) :: integrator        ! the integrators can be Euler or Velocity Verlet
+    double precision :: in_dt             ! time between two steps in ps
+    integer          :: steps             ! steps of the simulation
+    integer          :: measure_steps     ! steps between two measures
+    ! parameters in reduced units
+    double precision :: rho, temp, temp_init, dt
+    ! observables
+    double precision :: time              ! time evolution in reduced units
+    double precision :: kin               ! kinetic energy per particle in reduced units
+    double precision :: pot               ! potential energy per particle in reduced units
+    double precision :: tot               ! total energy per particle in reduced units
+    double precision :: tempi             ! temperature of the system in reduced units
+    double precision :: pres              ! pressure in reduced units
+    double precision :: dr2               ! square displacement in reduced units
+    ! conversion factors
+    double precision :: lconv, econv, rhoconv, tempconv, pconv, timeconv
+    ! simulation box
     integer :: box_m
     double precision :: box_l, box_a
-    double precision :: dnparts, lconv, econv, rhoconv, tempconv, pconv, timeconv
-    double precision, allocatable :: positions(:,:), velocities(:,:), forces(:,:)
-    double precision, allocatable :: oldpos(:,:)
-    double precision :: cutoff, sigma, nu
-    integer :: i,l
+    ! dynamics
+    double precision, allocatable :: newpos(:,:), oldpos(:,:), vel(:,:), force(:,:)
+    ! others
+    double precision :: dnparts
+    double precision :: sigma, nu
+    integer :: iter, l, therm_on
 
-    ! leer parametros del fichero de entrada
-    infile = "parametros.dat"
-    call Read_parameters(infile, nparts, geometry, rho, mass, LJ_sig, LJ_eps, cutoff, temp, temp_init, bimodal, &
-    disorder_system, thermostat, integrator, dt, t_steps, k_steps, outfile, outfile1, outfile2)
+    ! read parameters
+    infile = "parameters.dat"
+    call Read_parameters(infile, nparts, geometry, in_rho, mass, LJ_sig, LJ_eps, cutoff, in_temp, in_temp_init, bimodal, &
+    disordered_system, thermostat, integrator, in_dt, steps, measure_steps, outfile1, outfile2, outfile3)
 
-    ! ficheros de salida
-    open(12,file=outfile)
-    open(13,file=outfile1)
-    open(15,file=outfile2)
-    !Escribe tray para poder leerse en vmd
-    open(36,file='vmd.xyz')
+    ! open files
+    open(12,file=outfile1)  ! observables evolution
+    open(13,file=outfile2)  ! mean square displacement
+    open(15,file=outfile3)  ! final state positions
+    open(36,file='vmd.xyz') ! system evolution
 
-    ! vectores
-    allocate(positions(nparts,3), oldpos(nparts,3), velocities(nparts,3), forces(nparts,3))
+    ! determine vectors dimensions
+    allocate(newpos(nparts,3), oldpos(nparts,3), vel(nparts,3), force(nparts,3))
 
-    ! conversion de unidades reducidas a reales
+    ! calculate conversion fators
     dnparts = dble(nparts)
     lconv = LJ_sig
     econv = LJ_eps/dnparts
@@ -94,87 +73,121 @@ program Main
     pconv = 1d33*LJ_eps/(navo*LJ_sig**3d0)
     timeconv = 0.1d0*(mass*LJ_sig**2d0/LJ_eps)**0.5d0
 
-    ! radio de cutoff
+    ! calculate parameters in reduced units
+    rho = in_rho/rhoconv
+    temp = in_temp/tempconv
+    temp_init = in_temp_init/tempconv
+    dt = in_dt/timeconv
+
+    ! show reduced units
+    print*, "Reduced units"
+
+    ! -------------------------------------------------------- prepare the system -------------------------------------------------!
+    ! initialize the geometry
+    if(geometry == "SC ") then
+        print"(a30)", "SC geometry"
+        call sc_lattice(nparts,rho,newpos,box_l,box_a,box_m)
+    else
+        print"(a30)", "FCC geometry"
+        !call fcc_lattice(nparts,rho,newpos,box_l,box_a,box_m)
+    endif
+    if(disordered_system == "Yes") print"(a30)", "Disordered system"
+    ! calculate cutoff radius
     cutoff = cutoff*box_l
 
-    ! geometria
-    if (geometry == "SC ") call sc_lattice(nparts,rho,positions,box_l,box_a,box_m)
-    !if (geometry == "FCC") call fcc_lattice(nparts,rho,positions,box_l,box_a,box_m)
+    ! show simulation box parameters and cutoff
+    print"(a30,x,f16.10)", "Cell L = ", box_l
+    print"(a30,x,f16.10)", "Cell a = ", box_a
+    print"(a30,x,i16)", "Cell M = ", box_m
+    print"(a30,x,f16.10)", "Cutoff = ", cutoff
+    print"(a30,x,f16.10)", "Time step = ", dt
 
-    ! iniciamos velocidades
-    if (bimodal == "Si") then
-        call bimodal_vel(nparts,temp_init,velocities)
+    print"(a30,x,f16.10)", "Density = ", rho
+    if(thermostat == "Yes") print"(a30,x,f16.10)", "Room temperature = ", temp
+    if (thermostat == "Yes") then 
+        therm_on = 1
     else
-        velocities = 0d0
-    endif
-
-    ! sistema desordenado
-    if (disorder_system == "Si") then
-        call LJ_potential(nparts,positions,cutoff,box_l,1, pot, forces)
-        nu = 5.d0*dt
-        sigma = dsqrt(temp_init)
-        do i  = 1, 1000000
-            call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,positions,velocities,pot,forces)
-        enddo
+        therm_on = 0
     endif
     
-    ! fuerza, energia, presion y temperatura inicial
-    write(12,*) '# N = ',nparts,', rho (g/cm^3) = ',rho*rhoconv,', L (A) = ',box_L*lconv,', a (A) = ',box_a*lconv,', M = ',box_m
+    if(bimodal == "Yes" .or. disordered_system == "Yes") print"(a30,x,f16.10)", "Initial temperature = ", temp_init
+    ! initialize velocities
+    if (bimodal == "Yes") then
+        call bimodal_vel(nparts,temp_init,vel)
+    else
+        vel = 0d0
+    endif
+
+    ! mess up the system
+    if (disordered_system == "Yes") then
+        call LJ_potential(nparts,newpos,cutoff,box_l,1, pot, force)
+        nu = 10.d0*dt
+        sigma = dsqrt(temp_init)
+        do iter  = 1, 100000
+            call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,1)
+        enddo
+    endif
+    !------------------------------------------------------------- the system is ready --------------------------------------------!
+    ! Initial state
+    write(12,*) '# N = ',nparts,', rho (g/cm^3) = ',in_rho,', L (A) = ',box_L*lconv,', a (A) = ',box_a*lconv,', M = ',box_m
     write(12,*) '# time (ps), kin/N (kJ/mol), pot/N (kJ/mol), tot/N (kJ/mol), temp (K), pres (Pa)'
     time = 0.d0
-    call LJ_potential(nparts,positions,cutoff,box_l,1, pot, forces)
-    call Kinetic_Energy(nparts, velocities, kin)
+    call LJ_potential(nparts,newpos,cutoff,box_l,1, pot, force)
+    call Kinetic_Energy(nparts, vel, kin)
     tot = kin + pot
     tempi = kin*2.d0/(3.d0*dnparts-3.d0)
-    call pressure(nparts,rho,tempi,box_l,cutoff,positions,pres)
+    call pressure(nparts,rho,tempi,box_l,cutoff,newpos,pres)
     write(12,*) time*timeconv, kin*econv, pot*econv, tot*econv, tempi*tempconv, pres*pconv
-    ! bucle temporal
+    ! time evolution (dynamics)
+    oldpos = newpos
+    dr2 = 0.d0
     nu = 5.d0*dt
     sigma = dsqrt(temp)
-    dr2 = 0.d0
-    oldpos = positions
-    do i  = 1, t_steps
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    !Escribir trayectoria en xyz para leerse en VMD!
-    write(36,*) nparts
-    write(36,*)
-    do l=1,nparts
-          write(36,*) 'A', positions(l,1), positions(l,2), positions(l,3)
-    end do
-
-
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        ! siguiente punto
+    do iter  = 1, steps
+        ! next point
         time = time + dt
-        call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,positions,velocities,pot,forces)
-        dr2 = dr2 + sum((positions - oldpos)**2)
-            if (mod(i,100) == 0) then
-                write(13,*) time*timeconv, dr2*lconv**2/dble(nparts)/100.d0
-                oldpos = positions
-            end if
-        if (mod(i,k_steps) == 0) then
-            ! energia cinetica, temperatura y energia total
-            call Kinetic_Energy(nparts, velocities, kin)
+        call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,therm_on)
+        ! mean square displacement
+        dr2 = dr2 + sum((newpos - oldpos)**2)
+        if (mod(iter,100) == 0) then
+            write(13,*) time*timeconv, dr2*lconv**2/dble(nparts)/100.d0
+            oldpos = newpos
+        end if
+        if (mod(iter,measure_steps) == 0) then
+
+            ! Write trajectory in xyz format to be read by VMD
+            write(36,*) nparts
+            write(36,*)
+            do l=1,nparts
+                write(36,*) 'A', newpos(l,1)*lconv, newpos(l,2)*lconv, newpos(l,3)*lconv
+            end do
+
+            ! calculate energy, temperature and pressure
+            call Kinetic_Energy(nparts, vel, kin)
             tot = kin + pot
             tempi = kin*2.d0/(3.d0*dnparts-3.d0)
-            call pressure(nparts,rho,tempi,box_l,cutoff,positions,pres)
+            call pressure(nparts,rho,tempi,box_l,cutoff,newpos,pres)
             write(12,*) time*timeconv, kin*econv, pot*econv, tot*econv, tempi*tempconv, pres*pconv
         end if
     end do
-    positions = positions*lconv
-    write(15,*) nparts, rho*rhoconv
-    do i = 1, nparts
-        write(15,*) positions(i,1), positions(i,2), positions(i,3)
+    ! final state positions
+    newpos = newpos*lconv
+    write(15,*) nparts, box_l*lconv, in_rho
+    do iter = 1, nparts
+        write(15,*) newpos(iter,1), newpos(iter,2), newpos(iter,3)
     end do
 
+    ! close files
     close(15)
     close(12)
     close(13)
-    close(36)!cerrar vmd.xyz
+    close(36)
+
 end program Main
 
+
 !**********************************************************************************************************************************!
-! read input file
+! read input file (A very ugly subroutine)
 subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, epsilon, cutoff, temp_room, temp_init, bimodal, &
     disorder_system, thermostat, integrator, time_step, steps, measure_steps, observables_file, MSD_file, positions_file)
 
@@ -191,9 +204,9 @@ subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, 
     double precision, intent(out) :: cutoff ! relative to cell length
     double precision, intent(out) :: temp_room ! K
     double precision, intent(out) :: temp_init ! K
-    character(len=2), intent(out) :: bimodal ! Si/No
-    character(len=2), intent(out) :: disorder_system ! Si/No
-    character(len=2), intent(out) :: thermostat ! Si/No
+    character(len=3), intent(out) :: bimodal ! Si/No
+    character(len=3), intent(out) :: disorder_system ! Si/No
+    character(len=3), intent(out) :: thermostat ! Si/No
     character(len=6), intent(out) :: integrator ! Euler/Verlet
     double precision, intent(out) :: time_step ! ps
     integer, intent(out) :: steps ! steps of simulation
