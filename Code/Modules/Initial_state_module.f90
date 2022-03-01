@@ -41,6 +41,7 @@ module Initial_state_module
         do i = 1, celdim
             do j = 1, celdim
                 do k = 1, celdim
+                    numpart = numpart + 1
                     ! Counter is updated each time a new particle is introduced
                     positions(numpart,1) = -0.5d0*length + dble(i-1)*space
                     positions(numpart,2) = -0.5d0*length + dble(j-1)*space
