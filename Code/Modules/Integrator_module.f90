@@ -27,7 +27,6 @@ module Integrator_module
        double precision :: nu, sigma
        double precision :: velocities(nparts,3)
        ! variables internes subrutina
-       double precision, parameter :: pi = 4d0*datan(1.d0)
        double precision :: nu_n, x1, x2, x3, x4
        integer :: n
 
