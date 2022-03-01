@@ -36,30 +36,32 @@ subroutine LJ_potential(npart,positions,cutoff,length,pbc_on, Upot, force)
     force = 0.d0
     ! bucle que recorre todas las interacciones
      !$omp parallel private(dr,dr6,dr8, dr12, dr14,dr2) 
-!$omp do schedule(dynamic,4)  reduction(+:Upot) reduction(+:force) 
+!$omp do schedule(dynamic,4)  reduction(+:Upot) reduction(+:force)
+!algo mal en la parelizacion? No va más rápido pero parece que da los mismos resultados, probar con sistema más grande y más tiempo
+!La actual version del programa no funciona, el error parece estar en el main (pues una anterior iba)
     do i = 1, npart-1
         do j = i+1, npart
-            ! calculem la diferencia entre les dos posicions
+        ! calculo de diferencia entre dos posiciones
             do k = 1, 3
                 dr(k) = positions(i,k) - positions(j,k)
             end do
-            ! apliquem condicions periodiques de contorn
+            ! aplicamos pbc
             if(pbc_on == 1) call pbc(dr,length)
-            ! calculem la distancia
+            ! calculo de la distancia
             dr2 = dr(1)**2 + dr(2)**2 + dr(3)**2
-            ! si la distancia es inferior a cutoff calculem la contribucio
+            ! correccion por cutoff
             if(dr2 <= cutoff**2) then
                 dr6 = dr2**3
                 dr8 = dr2**4
                 dr12 = dr2**6
                 dr14 = dr2**7
-                ! energia potencial he quitado el upot +
+                ! energia potencial
                 Upot = Upot+4.d0*(1.d0/dr12 - 1.d0/dr6) - 4.d0*( 1.d0/cutoff**12 - 1.d0/cutoff**6)
-                ! força particula i
+                ! fuerza particula i
                 force(i,1) = force(i,1) + (48.d0/dr14 - 24.d0/dr8)*dr(1)
                 force(i,2) = force(i,2) + (48.d0/dr14 - 24.d0/dr8)*dr(2)
                 force(i,3) = force(i,3) + (48.d0/dr14 - 24.d0/dr8)*dr(3)
-                ! força particula j
+                ! fuerza particula j
                 force(j,1) = force(j,1) - (48.d0/dr14 - 24.d0/dr8)*dr(1)
                 force(j,2) = force(j,2) - (48.d0/dr14 - 24.d0/dr8)*dr(2)
                 force(j,3) = force(j,3) - (48.d0/dr14 - 24.d0/dr8)*dr(3)
