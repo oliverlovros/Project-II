@@ -14,8 +14,7 @@ program gofr_3D
     integer :: i, j
     double precision :: dr
     
-    print*, "Introduce the parameters file."
-    read(*,*) infile
+    infile = "gofr_params.txt"
 
     open(10,file=infile)
     read(10,*) nconfig

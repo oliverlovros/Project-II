@@ -51,7 +51,7 @@ program Main
     integer :: iter, l, therm_on
 
     ! read parameters
-    infile = "parameters.dat"
+    infile = "parameters.txt"
     call Read_parameters(infile, nparts, geometry, in_rho, mass, LJ_sig, LJ_eps, cutoff, in_temp, in_temp_init, bimodal, &
     disordered_system, thermostat, integrator, in_dt, steps, measure_steps, outfile1, outfile2, outfile3)
 

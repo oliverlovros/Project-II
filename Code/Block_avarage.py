@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys #para seleccionar el archivo
 input_file=sys.argv[1]
+print('A información do método atópase en:  https://doi.org/10.1063/1.457480')
 def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
     "Método para calcular incertidumes con datos correlacionados temporalmente, block-avarage. Sería ideal engadir o método de bootstraping para comparar"
     Nobs = len(datos) # número total de datos, dar un array ou lista
@@ -11,7 +12,6 @@ def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
     Numero_de_bloques = tamaño_bloque_maximo-tamaño_bloque_minimo # total number of block sizes
     Media_bloque = np.zeros(Numero_de_bloques) 
     co = np.zeros(Numero_de_bloques) # definese no seguinte papper, pero é a varianza
-    print('A información do método atópase en:  https://doi.org/10.1063/1.457480')
     bloqueCtr=0
     incertidume=np.zeros(Numero_de_bloques)
     barra_erros=np.zeros(Numero_de_bloques)
@@ -33,21 +33,25 @@ def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
         bloqueCtr=bloqueCtr+1
     tamaño_bloque= np.arange(tamaño_bloque_minimo,tamaño_bloque_maximo)
     if grafica:
-        plt.title(nome,fontsize=30)
+        plt.title(nome)
         plt.errorbar(tamaño_bloque, incertidume,barra_erros, marker='o',ls='None',markersize=8, capsize=6)
-        plt.xlabel('Tamaño do bloque',fontsize=26)#(Número de datos por bloque, que deben ter todos o mesmo tamaño)
-        plt.ylabel('Desviación estándar',fontsize=26)
-        plt.xticks(fontsize=22)
-        plt.yticks(fontsize=22)
-        plt.show()
+        plt.xlabel('Block length')#(Número de datos por bloque, que deben ter todos o mesmo tamaño)
+        plt.ylabel('Statistical error')
+        plt.xticks()
+        plt.yticks()
+        plt.savefig(f"{nome}_fig1.png",dpi=300,bbox_inches = 'tight')
+        #plt.show()
+        plt.clf()
         plt.errorbar(tamaño_bloque, Media_bloque, incertidume,marker='o',ls='None',markersize=8, capsize=6,color='Orange')
-        plt.ylabel('Media',fontsize=26)
-        plt.title(nome,fontsize=30)
-        plt.xticks(fontsize=22)
-        plt.yticks(fontsize=22)
-        plt.xlabel('Tamaño do bloque',fontsize=26)
-        plt.show()
-        print(f"Valor medio = {Media_bloque[-1]:.3f} +/- {incertidume[-1]:.3f}")
+        plt.ylabel('Mean value')
+        plt.title(nome)
+        plt.xticks()
+        plt.yticks()
+        plt.xlabel('Block length')
+        plt.savefig(f"{nome}_fig2.png",dpi=300,bbox_inches = 'tight')
+        plt.clf()
+        #plt.show()
+        print(f"Mean value {nome} = {Media_bloque[-1]:.3f} +/- {incertidume[-1]:.3f}")
     return tamaño_bloque, Media_bloque, incertidume
     
 ##########################################
