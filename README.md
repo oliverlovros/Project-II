@@ -73,8 +73,7 @@ In order to run this program, the necessary files are found in the [Working_area
 This directory contains the following files:
 
 - **Makefile**: Compiles and executes the whole program. It is also designed to manage all the generated files for a more user-friendly experience.
-- **parameters.txt**: Data file that contains all the parameters related to the system of study (Number of particles, geometry of the lattice, density, mass,...), the data related to the simulation (Initial temperature, initial distribution, thermostat, integration method,...) and a final section where the names of the output data files are defined.
-- **gofr_params.txt**: Data file that contains the necessary parameters in order to run correctly the radial distribution function (g(r)) calculation. **Important**: This file contains information such as the number of particles, the number of configurations, the density,... so it is very important that these parameters coincide with those defined in the parameters.txt file.
+- **parameters.txt**: Data file that contains all the parameters related to the system of study (Number of particles, geometry of the lattice, density, mass,...), the data related to the simulation (Initial temperature, initial distribution, thermostat, integration method,...) and a final section where the names of the output data files are defined. Additionaly, this file contains the necessary parameters in order to run correctly the radial distribution function (g(r)) calculation. 
 
 To start using the program, the following command has to be used:
 ```
@@ -82,7 +81,26 @@ make all
 ```
 This will compile and execute the program and all the statistic calculations will also be performed. It is **important** to point out that in order to perform the whole program, the user is asked a couple of questions related to the statistical study, so keep an eye on this, otherwise the program will not reach completion.
 
-Once the process has been completed, the unecessary files are cleaned and the output files are sent to their corresponding directories (Results -> Data and Figures).
+Once the process has been completed, the unnecessary files are cleaned and the output files are sent to their corresponding directories (Results -> Data and Figures).
+
+**Note**: Due to the modular nature of the program, it can be executed in parts (or modules) by using the following commands:
+
+```
+# Compilation of the Main program and the gofr module (Fortran programming language)
+make compile
+
+# Execution of the Main program and the gofr module (Fortran programming language)
+make run
+
+# Computes the statistical analysis and generates the corresponding figures as outputs (Python programming language)
+make statistic
+
+# Data files and figures (outputs) to  the Results folder
+make move
+
+# Removes objects, executables and unnecessary .mod files
+make clean
+```
 
 To visualize the trajectory of the system, VMD software is needed.
 
@@ -103,7 +121,7 @@ The joint work tasks will be carried out (to a greater extent) by those members 
 
 ## Wiki 📖
 
-Puedes encontrar mucho más de cómo utilizar este proyecto en nuestra [Wiki](https://github.com/Eines-Informatiques-Avancades/Project-II/wiki)
+...Work in progress...
 
 <!-- CONTRIBUTING -->
 ## Contributing 🖇️
