@@ -9,18 +9,19 @@ contains
 subroutine LJ_potential(npart,positions,cutoff,length,pbc_on, Upot, force)
 
     !------------------------------------------------------------------------------------------------------------------------------!
-    ! Codigo Daniel
-    ! Información
-    ! La subrutina calcula la energia potencial y la fuerza entre partículas, las cuales se encuentran sometidas a un potencial de Lennard-Jones.
-    ! Variables de entrada:
-    !   npart: número de partículas
-    !   positions(npart,3): matriz de posiciones de las n_particulas
-    !   cutoff: radio de interacción
-    !   length: longitud de la caja
-    !   pbc_on: en caso de ser 1, aplica condiciones periódicas de contorno
-    ! Variables de salida:
-    !   Upot: energia potencial del sistema
-    !   force(npart,3): matriz para obtener la fuerza que aplica sobre cada partícula
+    ! Author: Daniel Conde
+    ! About:
+    ! The LJ_potential subroutine calculates the potential energy and the forces between particles, which are subjected to a Lennard-
+    ! Jones potential.
+    ! Input variables:
+    !   npart: total number of particles in the system
+    !   positions(npart,3): matrix containing the positions of all the particles (npart)
+    !   cutoff: interaction radius
+    !   length: length of each side of the box
+    !   pbc_on: if 1, periodic boundary conditions are applied
+    ! Output variables:
+    !   Upot: potential energy of the system
+    !   force(npart,3): matrix to obtain the force applied on each particle
     !------------------------------------------------------------------------------------------------------------------------------!
 
     implicit none
@@ -30,38 +31,38 @@ subroutine LJ_potential(npart,positions,cutoff,length,pbc_on, Upot, force)
     integer :: i, j, k
     double precision :: dr(3), dr2, dr6, dr8, dr12, dr14
    
-    ! iniciamos la energia
+    ! Energy is initialized
     Upot = 0.0
-    ! iniciamos la fuerza
+    ! Force is initialized
     force = 0.d0
-    ! bucle que recorre todas las interacciones
+    ! Loop that loops through all interactions
      !$omp parallel private(dr,dr6,dr8, dr12, dr14,dr2) 
 !$omp do schedule(dynamic,4)  reduction(+:Upot) reduction(+:force)
 !algo mal en la parelizacion? No va más rápido pero parece que da los mismos resultados, probar con sistema más grande y más tiempo
 !La actual version del programa no funciona, el error parece estar en el main (pues una anterior iba)
     do i = 1, npart-1
         do j = i+1, npart
-        ! calculo de diferencia entre dos posiciones
+        ! Difference between two particles calculation
             do k = 1, 3
                 dr(k) = positions(i,k) - positions(j,k)
             end do
-            ! aplicamos pbc
+            ! PBC are applied
             if(pbc_on == 1) call pbc(dr,length)
-            ! calculo de la distancia
+            ! Distance calculation
             dr2 = dr(1)**2 + dr(2)**2 + dr(3)**2
-            ! correccion por cutoff
+            ! Cutoff correction
             if(dr2 <= cutoff**2) then
                 dr6 = dr2**3
                 dr8 = dr2**4
                 dr12 = dr2**6
                 dr14 = dr2**7
-                ! energia potencial
+                ! Potential energy
                 Upot = Upot+4.d0*(1.d0/dr12 - 1.d0/dr6) - 4.d0*( 1.d0/cutoff**12 - 1.d0/cutoff**6)
-                ! fuerza particula i
+                ! Force particle i
                 force(i,1) = force(i,1) + (48.d0/dr14 - 24.d0/dr8)*dr(1)
                 force(i,2) = force(i,2) + (48.d0/dr14 - 24.d0/dr8)*dr(2)
                 force(i,3) = force(i,3) + (48.d0/dr14 - 24.d0/dr8)*dr(3)
-                ! fuerza particula j
+                ! Force particle j
                 force(j,1) = force(j,1) - (48.d0/dr14 - 24.d0/dr8)*dr(1)
                 force(j,2) = force(j,2) - (48.d0/dr14 - 24.d0/dr8)*dr(2)
                 force(j,3) = force(j,3) - (48.d0/dr14 - 24.d0/dr8)*dr(3)
@@ -76,22 +77,22 @@ end subroutine LJ_potential
 subroutine Kinetic_Energy(nparts,velocity,kin_E)
 
     !------------------------------------------------------------------------------------------------------------------------------!
-    ! Codigo escrito por Daniel 
-    ! InformacióN
-    ! La subrutina calcula la energia cinetica de un sistema de partículas.
-    ! Variables de entrada:
-    !   nparts: número de partícules del sistema
-    !   velocity(nparts,3): matriz que contiene la velocidad en cada direcció de cada partícula 
-    ! Variables de salida:
-    !   kin_E: energia cinética del sistema
+    ! Author: Daniel Conde
+    ! About:
+    ! The Kinetic_Energy subroutine calculates the kinetic energy for a particle system.
+    ! Input variables:
+    !   nparts: total number of particles in the system
+    !   velocity(nparts,3): matrix containing the velocities in each direction for each particle 
+    ! Output variables:
+    !   kin_E: kinetic energy of the system
     !------------------------------------------------------------------------------------------------------------------------------!
 
     implicit none
-    ! variables de entrada y de salida
+    ! Input and output variables
     integer, intent(in) :: nparts
     double precision, intent(in) :: velocity(nparts,3)
     double precision :: kin_E
-    ! variables internas subrutina
+    ! Internal variables (subroutine)
     integer :: n, i
     double precision :: vel2
    
@@ -114,7 +115,23 @@ end subroutine Kinetic_Energy
 
 subroutine pressure(n,rho,temp,l,cutoff,pos,pres)
 
+    !------------------------------------------------------------------------------------------------------------------------------!
+    ! Author: Daniel Conde
+    ! About:
+    ! The pressure subroutine calculates the pressure of a npart system.
+    ! Input variables:
+    !   n: number of total particles
+    !   rho: density of the system
+    !   temp: temperature of the system
+    !   l: length of the box
+    !   cutoff: interaction radius
+    !   pos: position of each particle
+    ! Output variables:
+    !   pres: system pressure
+    !------------------------------------------------------------------------------------------------------------------------------!
+
     implicit none
+    ! Variables
     integer :: n
     double precision :: rho, temp, l, cutoff, pos(n,3)
     double precision :: pres
@@ -133,7 +150,7 @@ subroutine pressure(n,rho,temp,l,cutoff,pos,pres)
             end if
         end do
     end do
-    pres=pres+16/3.*pi*rho**2*(2/3.*(1./cutoff)**9)-(1/cutoff)**3/(1/(3*l**3))!Se añade para correcciones por cut-off
+    pres=pres+16/3.*pi*rho**2*(2/3.*(1./cutoff)**9)-(1/cutoff)**3/(1/(3*l**3))! Added for cut-off corrections
     pres = rho*temp + pres/(3.d0*l**3)
 
     return

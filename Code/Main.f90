@@ -64,8 +64,7 @@ program Main
     ! open files
     open(12,file=outfile1)  ! observables evolution
     open(13,file=outfile2)  ! mean square displacement
-    open(15,file=outfile3)  ! final state positions
-    open(36,file='vmd.xyz') ! system evolution
+    open(36,file=outfile3) ! system evolution
 
     ! determine vectors dimensions
     allocate(newpos(nparts,3), oldpos(nparts,3), vel(nparts,3), force(nparts,3))
@@ -184,15 +183,9 @@ program Main
             write(12,*) time*timeconv, kin*econv, pot*econv, tot*econv, tempi*tempconv, pres*pconv
         end if
     end do
-    ! final state positions
-    newpos = newpos*lconv
-    write(15,*) nparts, box_l*lconv, in_rho
-    do iter = 1, nparts
-        write(15,*) newpos(iter,1), newpos(iter,2), newpos(iter,3)
-    end do
 
     ! close files
-    close(15)
+
     close(12)
     close(13)
     close(36)

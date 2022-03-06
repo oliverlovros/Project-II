@@ -9,12 +9,13 @@ module pbc_module
     subroutine pbc(position,length)
 
         !------------------------------------------------------------------------------------------------------------------------------!
-        ! Informació
-        ! La subrutina aplica les condicions periòdiques de contorn (pbc) sobre una partícula.
-        ! Variables d'entrada:
-        !   length: longitud de cada costat de la caixa
-        ! Variables d'entrada i sortida (modificades):
-        !   position(3): vector que conte la posició on es troba la partícula
+        ! Author: Adrià Calzada
+        ! About:
+        ! The pbc subroutine applies the periodic boundary conditions on one particle
+        ! Input variables:
+        !   length: length of each side of the box
+        ! Modified input and output variables:
+        !   position(3): vector containing the position of one particle
         !------------------------------------------------------------------------------------------------------------------------------!
     
         implicit none
@@ -34,13 +35,14 @@ module pbc_module
     subroutine pbc_nparts(nparts,positions,length)
     
         !------------------------------------------------------------------------------------------------------------------------------!
-        ! Informació
-        ! La subrutina aplica les condicions periòdiques de contorn (pbc) sobre totes les partícules del sistema.
-        ! Variables d'entrada:
-        !   nparts: número de partícules del sistema
-        !   length: longitud de cada costat de la caixa
-        ! Variables d'entrada i sortida (modificades):
-        !   position(nparts,3): matriu que conte les posicions de les nparts partícules del sistema
+        ! Author: Adrià Calzada
+        ! About:
+        ! The pbc_nparts subroutine applies the periodic boundary conditions (pbc) on all the particles of the system.
+        ! Input variables:
+        !   nparts: total number of particles in the system
+        !   length: length of each side of the box
+        ! Modified input and output variables:
+        !   position(nparts,3): matrix containing the positions of the npart system
         !------------------------------------------------------------------------------------------------------------------------------!
     
         implicit none

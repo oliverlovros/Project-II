@@ -11,30 +11,31 @@ module Integrator_module
     subroutine therm_Andersen(nparts,velocities,nu,sigma)
 
     !------------------------------------------------------------------------------------------------------------------------------!
-    ! Informació
-    ! La subrutina aplica el termostat Andersen sobre un sistema de partícules.
-    ! Variables d'entrada:
-    !   nparts: número de partícules del sistema
-    !   nu: probabilitat d'acceptar un canvi de velocitat
-    !   sigma: desviació de la distribució
-    ! Variables d'entrada i sortida (modificades):
-    !   velocities(nparts,3): matriu que conté la velocitat en cada direcció de les partícules del sitema
+    ! Author: Àlex Teruel
+    ! About:
+    ! The therm_Andersen subroutine applies the Andersen thermostat on a npart system
+    ! Input variables:
+    !   nparts: total number of particles in the system
+    !   nu: probability of accepting a change of velocity
+    !   sigma: distribution deviation
+    ! Modified input and output variables:
+    !   velocities(nparts,3): matrix containing the velocities in each direction for each particle 
     !------------------------------------------------------------------------------------------------------------------------------!
 
        implicit none
-       ! variables d'entrada i sortida
+       ! Input and output variables
        integer :: nparts
        double precision :: nu, sigma
        double precision :: velocities(nparts,3)
-       ! variables internes subrutina
+       ! Internal variables (subroutine)
        double precision :: nu_n, x1, x2, x3, x4
        integer :: n
 
        do n = 1, nparts
            call random_number(nu_n)
-           ! si el nombre aleatori es menor a nu, calculem noves velocitats
+           ! If the random number < nu, new velocities are calculated
            if (nu_n < nu) then
-               ! les gaussianes les calculem usant el mètode box Muller
+               ! The gaussians are calculated using Muller's box method
                call random_number(x1); call random_number(x1); call random_number(x3); call random_number(x4)
                velocities(n,1) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dcos(2.d0*pi*x2)
                velocities(n,2) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dsin(2.d0*pi*x2)
@@ -47,44 +48,44 @@ module Integrator_module
     subroutine velocity_verlet_andersen(nparts,box_L,cutoff,nu,sigma,dt,positions,velocities,pot_E,forces,therm_on)
 
      !-----------------------------------------------------------------------------------------------------------------------------!
-     ! Codi escrit per Alex Teruel
-     ! Informació
-     ! La subrutina aplica el algorisme de velocity Verlet per integrar un pas de temps per un sistema de partícules interaccionant
-     ! sota un potencial de Lennard-Jones i un termostat Andersen.
-     ! Variables d'entrada:
-     !   nparts: número de partícules del sistema
-     !   box_L: longitud de cada costat de la caixa
-     !   cutoff: radi a partir del qual es negligeixen les interaccions
-     !   nu: probabilitat d'acceptar un canvi de velocitat
-     !   sigma: desviació de la distribució
-     !   dt: el salt temporal
-     ! Variables d'entrada i sortida (modificades):
-     !   positions(npart,3): matriu que conte les posicions de les npart partícules
-     !   velocities(nparts,3): matriu que conte la velocitat en cada direcció de cada partícula
-     !   pot_E: energia potencial del sistema
-     !   forces(nparts,3): matriu que conte la força en cada dimensió que rep cada partícula
+     ! Author: Àlex Teruel
+     ! About:
+     ! The velocity_verlet_andersen subroutine applies the velocity Verlet algorithm to integrate an instant of time through an
+     ! interacting particle under a Lennard-Jones potential and an Andersen thermostat.
+     ! Input variables:
+     !   nparts: total number of particles in the system
+     !   box_L: length of each side of the box
+     !   cutoff: interaction radius
+     !   nu: probability of accepting a change of velocity
+     !   sigma: distribution deviation
+     !   dt: time difference
+     ! Modified input and output variables:
+     !   positions(npart,3): matrix containing the positions of the npart system
+     !   velocities(nparts,3): matrix containing the velocities in each direction for each particle 
+     !   pot_E: potential energy of the system
+     !   forces(nparts,3): matrix to obtain the force applied on each particle of the system
      !-----------------------------------------------------------------------------------------------------------------------------!
     
         implicit none
-        ! variables d'entrada i sortida
+        ! Input and output variables
         integer :: nparts, therm_on
         double precision :: box_L, cutoff, nu, sigma, dt
         double precision :: positions(nparts,3), velocities(nparts,3)
         double precision :: pot_E, forces(nparts,3)
-        ! variables internes subrutina
+        ! Internal variables (subroutine)
         double precision :: newforces(nparts,3)
     
-        ! calculem noves posicions
+        ! New positions are calculated
         positions = positions + velocities*dt + 0.5d0*forces*dt**2
-        ! apliquem les condicions de contorn periodiques
+        ! Periodic Boundary Conditions are applied
         call pbc_nparts(nparts,positions,box_L)
-        ! calculem noves forces i energia potencial
+        ! New forces and potential energy are calculated
         call LJ_potential(nparts,positions,cutoff,box_L,1,pot_E,newforces)
-        ! calculem noves velocitats
+        ! New velocities are calculated
         velocities = velocities + 0.5d0*dt*(forces + newforces)
-        ! reasignem valors de les forces
+        ! Force values are reassigned
         forces = newforces
-        ! apliquem el termostat
+        ! Thermostat is applied
         if(therm_on == 1) call therm_Andersen(nparts,velocities,nu,sigma)
     
         return
@@ -93,7 +94,27 @@ module Integrator_module
 
     subroutine euler_andersen(nparts,box_L,cutoff,nu,sigma,dt,positions,velocities,pot_E,forces,therm_on)
 
+     !-----------------------------------------------------------------------------------------------------------------------------!
+     ! Author: Àlex Teruel
+     ! About:
+     ! The euler_andersen subroutine applies the Euler algorithm to integrate an instant of time through an
+     ! interacting particle under a Lennard-Jones potential and an Andersen thermostat.
+     ! Input variables:
+     !   nparts: total number of particles in the system
+     !   box_L: length of each side of the box
+     !   cutoff: interaction radius
+     !   nu: probability of accepting a change of velocity
+     !   sigma: distribution deviation
+     !   dt: time difference
+     ! Modified input and output variables:
+     !   positions(npart,3): matrix containing the positions of the npart system
+     !   velocities(nparts,3): matrix containing the velocities in each direction for each particle 
+     !   pot_E: potential energy of the system
+     !   forces(nparts,3): matrix to obtain the force applied on each particle of the system
+     !-----------------------------------------------------------------------------------------------------------------------------!
+    
         implicit none
+        ! Input and output variables
         integer :: nparts, therm_on
         double precision :: positions(nparts,3), velocities(nparts,3), forces(nparts,3), dt, box_L, cutoff, pot_E, nu, sigma
     

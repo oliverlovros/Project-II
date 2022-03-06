@@ -48,7 +48,7 @@ Time evolution:
 "temp_evol.dat"
 Mean square displacement:
 "MSD.dat"
-Final state positions:
-"positions.dat"
+vmd file:
+"vmd.xyz"
 
 ***************************************************************************************************
