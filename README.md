@@ -43,28 +43,19 @@
 <!-- Pre-requirements -->
 ### Pre-requirements 📋
 
-_Que cosas necesitas para instalar el software y como instalarlas_
+In order to run the program it is necessary to have the following requirements installed:
 
-```
-sudo apt install python3.8
-sudo apt-get install gfortran
-```
-You also need/want to install VMD software
-For installation following the steps below: Download it from (http://www.ks.uiuc.edu/Research/vmd/) Then in the terminal type:
-```
-cd Downloads
-  tar -zxvf vmd-1.9.1.bin.LINUXAMD64.opengl.tar.gz
-```
-This will extract the folder to your downloads folder. You can then just
-```
-cd vmd-1.9.1
+The program is written in Fortran language so a compiler like [gfortran](https://gcc.gnu.org/wiki/GFortran) or equivalent is needed.
 
-./configure LINUXAMD64
+Python programs are used to perform statistical analysis of the obtained data. Therefore, Python version 3 or higher is required. Also, for python programs to work properly the following libraries are needed:
 
-cd src
+- [Numpy](https://numpy.org)
+- [Matplotlib](https://matplotlib.org)
+- [Sys](https://docs.python.org/3/library/sys.html)
 
-sudo make install
-```
+To be able to use these libraries, it is recommended to work with anaconda environment.
+
+In case the user wishes to see the trajectory generated in the simulation program, the use of the [VMD](https://www.ks.uiuc.edu/Research/vmd/) program is recommended.
 
 <!-- Installation -->
 ## Installation 🔧
