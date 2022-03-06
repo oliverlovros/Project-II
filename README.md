@@ -107,7 +107,7 @@ Project coordinator: Àlex Teruel
 - Integration (module): Àlex Teruel
 - Radial distribution function (Fortran program): Àlex Teruel
 - Statistics (python program): Daniel Conde
-- Visualisation of Results (makefile + gnuplot + results analysis): Joint work
+- Visualization of Results (makefile + results analysis and representations): Joint work
 
 The joint work tasks will be carried out (to a greater extent) by those members who are more advanced in their corresponding tasks.
 
