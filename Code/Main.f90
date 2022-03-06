@@ -48,12 +48,18 @@ program Main
     ! others
     double precision :: dnparts
     double precision :: sigma, nu
-    integer :: iter, l, therm_on
+    integer :: iter, l, therm_on, integrator_num
 
     ! read parameters
     infile = "parameters.txt"
     call Read_parameters(infile, nparts, geometry, in_rho, mass, LJ_sig, LJ_eps, cutoff, in_temp, in_temp_init, bimodal, &
     disordered_system, thermostat, integrator, in_dt, steps, measure_steps, outfile1, outfile2, outfile3)
+
+    if (integrator == "Verlet") then
+        integrator_num = 1
+    else ! Euler
+        integrator_num = 0
+    endif
 
     ! open files
     open(12,file=outfile1)  ! observables evolution
@@ -124,7 +130,11 @@ program Main
         nu = 10.d0*dt
         sigma = dsqrt(temp_init)
         do iter  = 1, 100000
-            call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,1)
+            if (integrator_num == 1) then 
+                call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,1)
+            else
+                call euler_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,1)
+            endif
         enddo
     endif
     !------------------------------------------------------------- the system is ready --------------------------------------------!
@@ -146,7 +156,11 @@ program Main
     do iter  = 1, steps
         ! next point
         time = time + dt
-        call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,therm_on)
+        if (integrator_num == 1) then
+            call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,therm_on)
+        else
+            call euler_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,1)
+        endif
         ! mean square displacement
         dr2 = dr2 + sum((newpos - oldpos)**2)
         if (mod(iter,100) == 0) then
