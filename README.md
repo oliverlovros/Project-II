@@ -77,26 +77,24 @@ pip install foobar
 ```
 <!-- Usage -->
 ## Usage ⚙️
-In the Working_area directory
+In order to run this program, the necessary files are found in the [Working_area](https://github.com/Eines-Informatiques-Avancades/Project-II/tree/master/Working_Area) directory.
+
+This directory contains the following files:
+
+- **Makefile**: Compiles and executes the whole program. It is also designed to manage all the generated files for a more user-friendly experience.
+- **parameters.txt**: Data file that contains all the parameters related to the system of study (Number of particles, geometry of the lattice, density, mass,...), the data related to the simulation (Initial temperature, initial distribution, thermostat, integration method,...) and a final section where the names of the output data files are defined.
+- **gofr_params.txt**: Data file that contains the necessary parameters in order to run correctly the radial distribution function (g(r)) calculation. **Important**: This file contains information such as the number of particles, the number of configurations, the density,... so it is very important that these parameters coincide with those defined in the parameters.txt file.
+
+To start using the program, the following command has to be used:
 ```
-#make usage
-make modulos
 make all
-
-#to visualize...
-vmd (explain)
-python
-import foobar
-
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
 ```
+This will compile and execute the program and all the statistic calculations will also be performed. It is **important** to point out that in order to perform the whole program, the user is asked a couple of questions related to the statistical study, so keep an eye on this, otherwise the program will not reach completion.
+
+Once the process has been completed, the unecessary files are cleaned and the output files are sent to their corresponding directories (Results -> Data and Figures).
+
+To visualize the trajectory of the system, VMD software is needed.
+
 <!-- DISTRIBUTION OF TASKS -->
 ## Distribution of tasks ✒️ 
 Project coordinator: Àlex Teruel
