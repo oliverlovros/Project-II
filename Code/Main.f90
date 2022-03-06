@@ -9,7 +9,7 @@ program Main
 
     implicit none
     ! files
-    character(len=80) :: infile, outfile1, outfile2, outfile3
+    character(len=80) :: infile, outfile1, outfile2, outfile3, outfile4
     ! parameters
     integer :: nparts
     character(len=3) :: geometry          ! geometry of th system: SC/FCC
@@ -28,6 +28,7 @@ program Main
     double precision :: in_dt             ! time between two steps in ps
     integer          :: steps             ! steps of the simulation
     integer          :: measure_steps     ! steps between two measures
+    integer          :: boxes             ! number of boxes of the histogram
     ! parameters in reduced units
     double precision :: rho, temp, temp_init, dt
     ! observables
@@ -53,7 +54,8 @@ program Main
     ! read parameters
     infile = "parameters.txt"
     call Read_parameters(infile, nparts, geometry, in_rho, mass, LJ_sig, LJ_eps, cutoff, in_temp, in_temp_init, bimodal, &
-    disordered_system, thermostat, integrator, in_dt, steps, measure_steps, outfile1, outfile2, outfile3)
+    disordered_system, thermostat, integrator, in_dt, steps, measure_steps, boxes,  outfile1, outfile2, outfile3, outfile4)
+    
 
     if (integrator == "Verlet") then
         integrator_num = 1
@@ -84,44 +86,33 @@ program Main
     temp_init = in_temp_init/tempconv
     dt = in_dt/timeconv
 
-    ! show reduced units
-    print*, "Reduced units"
-
+    print*, "The simulation started."
     ! -------------------------------------------------------- prepare the system -------------------------------------------------!
+    print*, "The initial configuration is being generated."
     ! initialize the geometry
     if(geometry == "SC ") then
-        print"(a30)", "SC geometry"
         call sc_lattice(nparts,rho,newpos,box_l,box_a,box_m)
     else
-        print"(a30)", "FCC geometry"
         !call fcc_lattice(nparts,rho,newpos,box_l,box_a,box_m)
     endif
-    if(disordered_system == "Yes") print"(a30)", "Disordered system"
     ! calculate cutoff radius
     cutoff = cutoff*box_l
 
-    ! show simulation box parameters and cutoff
-    print"(a30,x,f16.10)", "Cell L = ", box_l
-    print"(a30,x,f16.10)", "Cell a = ", box_a
-    print"(a30,x,i16)", "Cell M = ", box_m
-    print"(a30,x,f16.10)", "Cutoff = ", cutoff
-    print"(a30,x,f16.10)", "Time step = ", dt
-
-    print"(a30,x,f16.10)", "Density = ", rho
-    if(thermostat == "Yes") print"(a30,x,f16.10)", "Room temperature = ", temp
     if (thermostat == "Yes") then 
         therm_on = 1
     else
         therm_on = 0
     endif
     
-    if(bimodal == "Yes" .or. disordered_system == "Yes") print"(a30,x,f16.10)", "Initial temperature = ", temp_init
     ! initialize velocities
     if (bimodal == "Yes") then
         call bimodal_vel(nparts,temp_init,vel)
     else
         vel = 0d0
     endif
+
+    ! generate gofr input file
+    call gofr_params(steps,measure_steps,nparts,box_l*lconv,in_rho,boxes,outfile3,outfile4)
 
     ! mess up the system
     if (disordered_system == "Yes") then
@@ -136,6 +127,7 @@ program Main
             endif
         enddo
     endif
+    print*, "The initial configuration was generated, the dynamics starts."
     !------------------------------------------------------------- the system is ready --------------------------------------------!
     ! Initial state
     write(12,*) '# N = ',nparts,', rho (g/cm^3) = ',in_rho,', L (A) = ',box_L*lconv,', a (A) = ',box_a*lconv,', M = ',box_m
@@ -158,7 +150,7 @@ program Main
         if (integrator_num == 1) then
             call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,therm_on)
         else
-            call euler_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,1)
+            call euler_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,therm_on)
         endif
         ! mean square displacement
         dr2 = dr2 + sum((newpos - oldpos)**2)
@@ -184,6 +176,8 @@ program Main
         end if
     end do
 
+    print*, "The dynamics ended, the simulation ended."
+
     ! close files
 
     close(12)
@@ -196,7 +190,8 @@ end program Main
 !**********************************************************************************************************************************!
 ! read input file (A very ugly subroutine)
 subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, epsilon, cutoff, temp_room, temp_init, bimodal, &
-    disorder_system, thermostat, integrator, time_step, steps, measure_steps, observables_file, MSD_file, positions_file)
+    disorder_system, thermostat, integrator, time_step, steps, measure_steps, boxes, observables_file, MSD_file, &
+    positions_file, gofr_file)
 
     implicit none
     ! input
@@ -218,9 +213,11 @@ subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, 
     double precision, intent(out) :: time_step ! ps
     integer, intent(out) :: steps ! steps of simulation
     integer, intent(out) :: measure_steps ! steps between two measures
+    integer, intent(out) :: boxes ! number of boxes histogram (g(r))
     character(len=80), intent(out) :: observables_file ! energy, temperature, etc evolution
     character(len=80), intent(out) :: MSD_file ! mean square displacement
-    character(len=80), intent(out) :: positions_file ! histogram of particles positions
+    character(len=80), intent(out) :: positions_file ! system evolution 
+    character(len=80), intent(out) :: gofr_file ! gofr.f90 output file
     ! others
     integer :: my_unit
 
@@ -269,6 +266,8 @@ subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, 
     read(my_unit,*) 
     read(my_unit,*) measure_steps
     read(my_unit,*)
+    read(my_unit,*) boxes
+    read(my_unit,*)
     read(my_unit,*)
     read(my_unit,*)
     read(my_unit,*) 
@@ -277,9 +276,42 @@ subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, 
     read(my_unit,*) MSD_file
     read(my_unit,*) 
     read(my_unit,*) positions_file
+    read(my_unit,*)
+    read(my_unit,*) gofr_file
     close(my_unit)
 
     return
 
 end subroutine Read_parameters
+
+! gofr input file generator
+subroutine gofr_params(steps,measure_steps,nparts,box_l,in_rho,boxes,outfile3,outfile4)
+
+    implicit none
+    integer, intent(in) :: steps, measure_steps, nparts, boxes
+    double precision, intent(in) :: box_l, in_rho
+    character(len=80), intent(in) :: outfile3, outfile4
+
+
+    open(10,file="gofr_params.txt")
+    write(10,*) steps/measure_steps
+    write(10,*) nparts
+    write(10,*) box_l 
+    write(10,*) in_rho
+    write(10,*) boxes
+    write(10,*) outfile3
+    write(10,*) outfile4
+    write(10,*) "**********************************"
+    write(10,*) "configurations"
+    write(10,*) "number of particles"
+    write(10,*) "simulation box length (A)"
+    write(10,*) "density (g/cm^3)"
+    write(10,*) "number of boxes of the histogram"
+    write(10,*) "data file"
+    write(10,*) "output file"
+    close(10)
+
+    return
+
+end subroutine gofr_params
 !**********************************************************************************************************************************!

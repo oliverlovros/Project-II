@@ -54,7 +54,9 @@ program gofr_3D
         r = dr*i - dr*0.5d0
         write(10,*) r, gofr(i)
     enddo
-    close(10)  
+    close(10)
+    
+    print*, "Radial distribution function was calculated."
     
 end program gofr_3D
 

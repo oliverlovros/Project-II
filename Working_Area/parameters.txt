@@ -38,9 +38,11 @@ Verlet
 Temporal step (ps):
 0.00025
 Number of steps:
-100000
+1000000
 Steps between two measures:
 1000
+Number of boxes (gofr):
+500
 
 -------------------------------------------- Files ------------------------------------------------
 
@@ -48,7 +50,9 @@ Time evolution:
 "temp_evol.dat"
 Mean square displacement:
 "MSD.dat"
-vmd file:
+VMD file:
 "vmd.xyz"
+G(r) file:
+"gofr.dat"
 
 ***************************************************************************************************

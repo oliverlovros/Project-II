@@ -1,8 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import sys #para seleccionar el archivo
-input_file=sys.argv[1]
-print('A información do método atópase en:  https://doi.org/10.1063/1.457480')
+import sys
+
+# parameters file
+params_file=sys.argv[1]
+
+# read the name of the data file
+def read_file(filename):
+    with open(filename, "r") as f:
+        lines = f.readlines()
+
+        i = 0
+        for line in lines:
+
+            if "Time evolution:" in line:
+                file1 = lines[i + 1]
+                file1_split = file1.split('"')[1]
+                break
+            i = i + 1
+
+    return file1_split
+
+
+
+input_file=read_file(params_file)
+results_file = open(f"{input_file}_mean_values.dat", "w")
+#print('A información do método atópase en:  https://doi.org/10.1063/1.457480')
 def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
     "Método para calcular incertidumes con datos correlacionados temporalmente, block-avarage. Sería ideal engadir o método de bootstraping para comparar"
     Nobs = len(datos) # número total de datos, dar un array ou lista
@@ -39,7 +62,7 @@ def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
         plt.ylabel('Statistical error')
         plt.xticks()
         plt.yticks()
-        plt.savefig(f"{nome}_fig1.png",dpi=300,bbox_inches = 'tight')
+        plt.savefig(f"{input_file}_{nome}_error.png",dpi=300,bbox_inches = 'tight')
         #plt.show()
         plt.clf()
         plt.errorbar(tamaño_bloque, Media_bloque, incertidume,marker='o',ls='None',markersize=8, capsize=6,color='Orange')
@@ -48,19 +71,20 @@ def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
         plt.xticks()
         plt.yticks()
         plt.xlabel('Block length')
-        plt.savefig(f"{nome}_fig2.png",dpi=300,bbox_inches = 'tight')
+        plt.savefig(f"{input_file}_{nome}_mean_value.png",dpi=300,bbox_inches = 'tight')
         plt.clf()
         #plt.show()
-        print(f"Mean value {nome} = {Media_bloque[-1]:.3f} +/- {incertidume[-1]:.3f}")
+        #print(f"Mean value {nome} = {Media_bloque[-1]:.3f} +/- {incertidume[-1]:.3f}")
+        results_file.write(f"Mean value {nome} = {Media_bloque[-1]:.3f} +/- {incertidume[-1]:.3f}" + "\n")
     return tamaño_bloque, Media_bloque, incertidume
     
 ##########################################
 #Añadir a posteriori
-print('Se va a empezar con el análisis estadístico')
-print('Desea seleccionar el número de bloques?i[yes/no]')
+print('The statistical analysis started')
+print('Do you want to select the number of blocks? [yes/no]')
 condicion=input()
 if str(condicion)=='yes' or str(condicion)=='si' or str(condicion)=='Yes'or str(condicion)=='YES' or str(condicion)=='SI':
-    print('Cuantos bloques quiere selecciona (número entero, sino se realizará una aproximación)?')
+    print("How many blocks do you want to select? (an integer, please)")
     bloque=int(input())
 else:
     bloque=False
@@ -81,4 +105,6 @@ blockAverage(Potential,'Potential Energy',bloque,grafica=True)
 blockAverage(Total_energy,'Total Energy',bloque,grafica=True)
 blockAverage(Temperature,'Temperature',bloque,grafica=True)
 blockAverage(Pressure,'Pressure',bloque,grafica=True)
+results_file.close()
 
+print("The statistical analysis ended.")
