@@ -68,6 +68,7 @@ clean_all:
 estadistica:
 	./program_gofr.exe
 	python $(OTHERDIR_MAIN)/Block_avarage.py temp_evol.dat
+	python $(OTHERDIR_MAIN)/generate_figures.py parameters.txt
 
 vmd:
 	vmd $(OTHERDIR_RESULTS)/vmd.xyz
