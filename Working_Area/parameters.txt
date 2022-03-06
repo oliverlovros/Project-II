@@ -38,7 +38,7 @@ Verlet
 Temporal step (ps):
 0.00025
 Number of steps:
-10000
+100000
 Steps between two measures:
 1000
 
