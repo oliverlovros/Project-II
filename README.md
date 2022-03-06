@@ -27,17 +27,13 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#Pre-requirements">Pre-requirements</a></li>
-    <li><a href="#Installation">Installation</a></li>
+    <li><a href="#Usage">Usage</a></li>
+    <li><a href="#wiki">Wiki</a></li>
     <li><a href="#Distribution-of-tasks">Distribution of tasks</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
-
 
 
 <!-- Pre-requirements -->
@@ -57,15 +53,6 @@ To be able to use these libraries, it is recommended to work with anaconda envir
 
 In case the user wishes to see the trajectory generated in the simulation program, the use of the [VMD](https://www.ks.uiuc.edu/Research/vmd/) program is recommended.
 
-<!-- Installation -->
-## Installation 🔧
-
-Use  to install the program.
-
-Ex:
-```bash
-pip install foobar
-```
 <!-- Usage -->
 ## Usage ⚙️
 In order to run this program, the necessary files are found in the [Working_area](https://github.com/Eines-Informatiques-Avancades/Project-II/tree/master/Working_Area) directory.
@@ -104,6 +91,12 @@ make clean
 
 To visualize the trajectory of the system, VMD software is needed.
 
+
+## Wiki 📖
+
+...Work in progress...
+
+
 <!-- DISTRIBUTION OF TASKS -->
 ## Distribution of tasks ✒️ 
 Project coordinator: Àlex Teruel
@@ -119,17 +112,12 @@ Project coordinator: Àlex Teruel
 
 The joint work tasks will be carried out (to a greater extent) by those members who are more advanced in their corresponding tasks.
 
-## Wiki 📖
-
-...Work in progress...
 
 <!-- CONTRIBUTING -->
 ## Contributing 🖇️
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-
 
 
 <!-- LICENSE -->
