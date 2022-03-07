@@ -31,7 +31,6 @@
     <li><a href="#wiki">Wiki</a></li>
     <li><a href="#Distribution-of-tasks">Distribution of tasks</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
   </ol>
 </details>
 
@@ -117,10 +116,5 @@ The joint work tasks will be carried out (to a greater extent) by those members 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-
-<!-- LICENSE -->
-## License
-[REPOSITORIO](https:...)
 
 
