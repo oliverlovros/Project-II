@@ -72,10 +72,10 @@ Once the process has been completed, the unnecessary files are cleaned and the o
 **Note**: Due to the modular nature of the program, it can be executed in parts (or modules) by using the following commands:
 
 ```
-# Compilation of the Main program and the gofr module (Fortran programming language)
+# Compilation of the Main and Gofr programs (Fortran programming language)
 make compile
 
-# Execution of the Main program and the gofr module (Fortran programming language)
+# Execution of the Main and Gofr programs (Fortran programming language)
 make run
 
 # Computes the statistical analysis and generates the corresponding figures as outputs (Python programming language)
@@ -99,14 +99,15 @@ The program generates an .xyz file containing the trajectory of the system. It i
 ## Distribution of tasks ✒️ 
 Project coordinator: Àlex Teruel
 
-- Main program (Fortran program): Working together
-- Initial state (module): Oliver Loveday
-- Boundary conditions (module): Adrià Calzada
-- Forces (module): Daniel Conde
-- Integration (module): Àlex Teruel
+- Main program (Fortran program): Joint work
+- Initial state (Fortran module): Oliver Loveday
+- Boundary conditions (Fortran module): Adrià Calzada
+- Forces (Fortran module): Daniel Conde
+- Integration (Fortran module): Àlex Teruel
 - Radial distribution function (Fortran program): Àlex Teruel
-- Statistics (python program): Daniel Conde
-- Visualization of Results (makefile + results analysis and representations): Joint work
+- Statistics (Python program): Daniel Conde
+- Visualization of Results (Python program): Joint work
+- Makefile: Joint work
 
 The joint work tasks will be carried out (to a greater extent) by those members who are more advanced in their corresponding tasks.
 
