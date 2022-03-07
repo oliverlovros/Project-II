@@ -81,11 +81,14 @@ make run
 # Computes the statistical analysis and generates the corresponding figures as outputs (Python programming language)
 make statistic
 
-# Data files and figures (outputs) to  the Results folder
+# Move data files and figures (outputs) to  the Results folder (Please, don't do it before the statistical analysis, the files to be analyzed must be in the working folder) 
 make move
 
 # Removes objects, executables and unnecessary .mod files
 make clean
+
+# If the user wants to return the repository to its original state (remove unnecessary files and results), the following command can be used
+make clean_all
 ```
 The program generates an .xyz file containing the trajectory of the system. It is highly recommended the use of [VMD](https://www.ks.uiuc.edu/Research/vmd/) in order to visualize the results.
 
