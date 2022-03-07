@@ -11,36 +11,36 @@ Number of particles (use x^3 for a better performance (1,8,27,64,125,216,343,512
 Geometry (SC/FCC):
 SC
 Density (g/cm^3):
-1.352
+0.0001785
 Mass (g/mol):
-40.0
+4.0026020
 LJ sigma parameter (A):
-3.4
+2.551
 LJ epsilon parameter (KJ/mol):
-0.998
+0.084768
 Cutoff (over the length of the system, entre 0 y 0.5):
 0.5
 Room temperature (K):
-240.0
+300
 
 ----------------------------------------- Simualation Data ----------------------------------------
 
 Initial temperature (K):
-0.d0
+300.d0
 Bimodal (Yes/No):
 No
 Disordered system (Yes/No):
-No
+Yes
 Thermostat (Yes/No):
 Yes
 Integration method (Euler/Verlet):
 Verlet
 Temporal step (ps):
-0.00025
+0.0001
 Number of steps:
 1000000
 Steps between two measures:
-1000
+2500
 Number of boxes (gofr):
 500
 

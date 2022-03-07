@@ -55,7 +55,6 @@ program Main
     infile = "parameters.txt"
     call Read_parameters(infile, nparts, geometry, in_rho, mass, LJ_sig, LJ_eps, cutoff, in_temp, in_temp_init, bimodal, &
     disordered_system, thermostat, integrator, in_dt, steps, measure_steps, boxes,  outfile1, outfile2, outfile3, outfile4)
-    
 
     if (integrator == "Verlet") then
         integrator_num = 1
@@ -75,7 +74,7 @@ program Main
     dnparts = dble(nparts)
     lconv = LJ_sig
     econv = LJ_eps/dnparts
-    rhoconv = 1d24*mass/(navo*LJ_sig**3)
+    rhoconv = 1d24*mass/(navo*LJ_sig**3)/1000.d0
     tempconv = LJ_eps/(navo*kbol)
     pconv = 1d33*LJ_eps/(navo*LJ_sig**3d0)
     timeconv = 0.1d0*(mass*LJ_sig**2d0/LJ_eps)**0.5d0
@@ -85,6 +84,7 @@ program Main
     temp = in_temp/tempconv
     temp_init = in_temp_init/tempconv
     dt = in_dt/timeconv
+
 
     print*, "The simulation started."
     ! -------------------------------------------------------- prepare the system -------------------------------------------------!
