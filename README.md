@@ -60,7 +60,7 @@ In order to run this program, the necessary files are found in the [Working_area
 This directory contains the following files:
 
 - **Makefile**: Compiles and executes the whole program. It is also designed to manage all the generated files for a more user-friendly experience.
-- **parameters.txt**: Data file that contains all the parameters related to the system of study (Number of particles, geometry of the lattice, density, mass,...), the data related to the simulation (Initial temperature, initial distribution, thermostat, integration method,...) and a final section where the names of the output data files are defined. Additionaly, this file contains the necessary parameters in order to run correctly the radial distribution function (g(r)) calculation. 
+- **parameters.txt**: Data file that contains all the parameters related to the system of study (Number of particles, geometry of the lattice (at the moment only sc available), density, mass,...), the data related to the simulation (Initial temperature, initial distribution, thermostat, integration method,...) and a final section where the names of the output data files are defined. Additionaly, this file contains the necessary parameters in order to run correctly the radial distribution function (g(r)) calculation. 
 
 To start using the program, the following command has to be used:
 ```
@@ -88,8 +88,7 @@ make move
 # Removes objects, executables and unnecessary .mod files
 make clean
 ```
-
-To visualize the trajectory of the system, VMD software is needed.
+The program generates an .xyz file containing the trajectory of the system. It is highly recommended the use of [VMD](https://www.ks.uiuc.edu/Research/vmd/) in order to visualize the results.
 
 
 ## Wiki 📖
@@ -108,7 +107,7 @@ Project coordinator: Àlex Teruel
 - Integration (module): Àlex Teruel
 - Radial distribution function (Fortran program): Àlex Teruel
 - Statistics (python program): Daniel Conde
-- Visualisation of Results (makefile + gnuplot + results analysis): Joint work
+- Visualization of Results (makefile + results analysis and representations): Joint work
 
 The joint work tasks will be carried out (to a greater extent) by those members who are more advanced in their corresponding tasks.
 
