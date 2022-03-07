@@ -16,6 +16,7 @@ program gofr_3D
     
     infile = "gofr_params.txt"
 
+    ! read the parameters
     open(10,file=infile)
     read(10,*) nconfig
     read(10,*) nparts
@@ -27,8 +28,10 @@ program gofr_3D
     close(10)
 
 
+    ! determine the dimension of the postioins array and histogram
     allocate(positions(nparts,3), gofr(boxes))
 
+    ! set all boxes to zero
     gofr = 0.d0
     
     open(10,file=datafile)
@@ -37,16 +40,21 @@ program gofr_3D
         read(10,*)
         read(10,*)
         do j = 1, nparts
+            ! read the positions of the ith configuration
             read(10,*) dummy, positions(j,1), positions(j,2), positions(j,3)
         enddo
+        ! sample the distances between the npart particles
         call sample_distances(positions,gofr,nparts,boxes,length)
     enddo
     close(10)
 
+    ! normalize the histogram
     call normalization(gofr,dr,nconfig,boxes,length,rho)
 
+    ! calculate the most probable distance
     call most_probable(gofr,boxes,dr,r_mostprob)
 
+    ! write the results
     open(10,file=outfile)
     write(10,*) "# maximum at r(A) = ", r_mostprob
     write(10,*) "# r, g(r)"
@@ -108,14 +116,17 @@ subroutine sample_distances(positions,gofr,nparts,boxes,length)
     integer :: i, j, xi
     double precision :: x1(3), x2(3), xr, rmax, dr
 
+    ! distances greater than L/2 are neglected
     rmax = 0.5d0*length
     dr = rmax/dble(boxes)
 
     do i = 1, nparts-1
         do j = i+1, nparts
+            ! calculate the distance between particles i and j with pbc
             x1 = positions(i,:)
             x2 = positions(j,:)
             xr = distance(x1,x2,length)
+            ! if the distance is less than L/2 add 1 in the corresponding box
             if (xr < rmax) then
                 xi = int(xr/dr) + 1
                 gofr(xi) = gofr(xi) + 1
@@ -141,11 +152,13 @@ subroutine normalization(gofr,dr,nconfig,boxes,length,rho)
 
     dr = 0.5d0*length/dble(boxes)
 
+    ! apply the normalization for gofr in 3D
     do i = 1, boxes
         r = dr*i - dr*0.5d0
         gofr(i) = gofr(i)/(4.d0*pi*r**2*dr*rho*dble(nconfig))
     enddo
-    ! ad hoc correction
+    ! ad hoc correction: due to the aproximations g(r) doesn't go exactly to 1 for large r (but usually very close). Here we force
+    ! the histogram to do it.
     gofr = gofr/gofr(boxes)
     return
 
@@ -161,6 +174,7 @@ subroutine most_probable(gofr,boxes,dr,r)
     integer :: i
     double precision :: maxprob, ri
 
+    ! save the position of the box with a greater contribution
     maxprob = 0.d0
     do i = 1, boxes
         ri = dr*i - dr*0.5d0

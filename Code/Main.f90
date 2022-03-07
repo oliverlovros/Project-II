@@ -65,7 +65,7 @@ program Main
     ! open files
     open(12,file=outfile1)  ! observables evolution
     open(13,file=outfile2)  ! mean square displacement
-    open(36,file=outfile3) ! system evolution
+    open(36,file=outfile3)  ! system evolution
 
     ! determine vectors dimensions
     allocate(newpos(nparts,3), oldpos(nparts,3), vel(nparts,3), force(nparts,3))
@@ -74,7 +74,7 @@ program Main
     dnparts = dble(nparts)
     lconv = LJ_sig
     econv = LJ_eps/dnparts
-    rhoconv = 1d24*mass/(navo*LJ_sig**3)/1000.d0
+    rhoconv = 1d24*mass/(navo*LJ_sig**3)
     tempconv = LJ_eps/(navo*kbol)
     pconv = 1d33*LJ_eps/(navo*LJ_sig**3d0)
     timeconv = 0.1d0*(mass*LJ_sig**2d0/LJ_eps)**0.5d0
@@ -117,9 +117,9 @@ program Main
     ! mess up the system
     if (disordered_system == "Yes") then
         call LJ_potential(nparts,newpos,cutoff,box_l,1, pot, force)
-        nu = 10.d0*dt
+        nu = 5.d0*dt
         sigma = dsqrt(temp_init)
-        do iter  = 1, 100000
+        do iter  = 1, 1000000
             if (integrator_num == 1) then 
                 call velocity_verlet_andersen(nparts,box_l,cutoff,nu,sigma,dt,newpos,vel,pot,force,1)
             else
@@ -188,7 +188,7 @@ end program Main
 
 
 !**********************************************************************************************************************************!
-! read input file (A very ugly subroutine)
+! read input file
 subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, epsilon, cutoff, temp_room, temp_init, bimodal, &
     disorder_system, thermostat, integrator, time_step, steps, measure_steps, boxes, observables_file, MSD_file, &
     positions_file, gofr_file)
@@ -207,8 +207,8 @@ subroutine Read_parameters(params_file, nparts, geometry, density, mass, sigma, 
     double precision, intent(out) :: temp_room ! K
     double precision, intent(out) :: temp_init ! K
     character(len=3), intent(out) :: bimodal ! Si/No
-    character(len=3), intent(out) :: disorder_system ! Si/No
-    character(len=3), intent(out) :: thermostat ! Si/No
+    character(len=3), intent(out) :: disorder_system ! Yes/No
+    character(len=3), intent(out) :: thermostat ! Yes/No
     character(len=6), intent(out) :: integrator ! Euler/Verlet
     double precision, intent(out) :: time_step ! ps
     integer, intent(out) :: steps ! steps of simulation
@@ -294,13 +294,13 @@ subroutine gofr_params(steps,measure_steps,nparts,box_l,in_rho,boxes,outfile3,ou
 
 
     open(10,file="gofr_params.txt")
-    write(10,*) steps/measure_steps
-    write(10,*) nparts
-    write(10,*) box_l 
-    write(10,*) in_rho
-    write(10,*) boxes
-    write(10,*) outfile3
-    write(10,*) outfile4
+    write(10,*) steps/measure_steps ! number of configurations
+    write(10,*) nparts ! particles
+    write(10,*) box_l  ! simulation box length
+    write(10,*) in_rho ! density (g/cm^3)
+    write(10,*) boxes ! number of boxes of th histogram
+    write(10,*) outfile3 ! gofr.f90 datafile
+    write(10,*) outfile4 ! gofr.f90 output file
     write(10,*) "**********************************"
     write(10,*) "configurations"
     write(10,*) "number of particles"

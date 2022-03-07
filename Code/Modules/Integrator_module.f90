@@ -35,7 +35,7 @@ module Integrator_module
            call random_number(nu_n)
            ! If the random number < nu, new velocities are calculated
            if (nu_n < nu) then
-               ! The gaussians are calculated using Muller's box method
+               ! The gaussians are calculated using the Box-Muller method
                call random_number(x1); call random_number(x1); call random_number(x3); call random_number(x4)
                velocities(n,1) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dcos(2.d0*pi*x2)
                velocities(n,2) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dsin(2.d0*pi*x2)
@@ -59,6 +59,7 @@ module Integrator_module
      !   nu: probability of accepting a change of velocity
      !   sigma: distribution deviation
      !   dt: time difference
+     !   therm_on: if it is 1, we apply the thermostat, if not, no.
      ! Modified input and output variables:
      !   positions(npart,3): matrix containing the positions of the npart system
      !   velocities(nparts,3): matrix containing the velocities in each direction for each particle 
@@ -85,7 +86,7 @@ module Integrator_module
         velocities = velocities + 0.5d0*dt*(forces + newforces)
         ! Force values are reassigned
         forces = newforces
-        ! Thermostat is applied
+        ! Thermostat is applied (sometimes)
         if(therm_on == 1) call therm_Andersen(nparts,velocities,nu,sigma)
     
         return
@@ -106,6 +107,7 @@ module Integrator_module
      !   nu: probability of accepting a change of velocity
      !   sigma: distribution deviation
      !   dt: time difference
+     !   therm_on: if it is 1, we apply the thermostat, if not, no.
      ! Modified input and output variables:
      !   positions(npart,3): matrix containing the positions of the npart system
      !   velocities(nparts,3): matrix containing the velocities in each direction for each particle 
@@ -118,10 +120,15 @@ module Integrator_module
         integer :: nparts, therm_on
         double precision :: positions(nparts,3), velocities(nparts,3), forces(nparts,3), dt, box_L, cutoff, pot_E, nu, sigma
     
+        ! new positions
         positions = positions + velocities*dt + 0.5d0*forces*dt**2
+        ! new velocities
         velocities = velocities + forces*dt
+        ! periodic boundary conditions
         call pbc_nparts(nparts,positions,box_L)
+        ! new forces and potential energy
         call LJ_potential(nparts,positions,cutoff,box_L,1,pot_E,forces)
+        ! thermostat (sometimes)
         if (therm_on == 1) call therm_Andersen(nparts,velocities,nu,sigma)
 
         return

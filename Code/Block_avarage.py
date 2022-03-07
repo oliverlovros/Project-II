@@ -13,7 +13,7 @@ def read_file(filename):
         i = 0
         for line in lines:
 
-            if "Time evolution:" in line:
+            if "Time Evolution:" in line:
                 file1 = lines[i + 1]
                 file1_split = file1.split('"')[1]
                 break

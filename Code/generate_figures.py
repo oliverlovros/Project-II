@@ -12,23 +12,29 @@ def read_params(filename):
 
         i = 0
         for line in lines:
-            if "Number of steps:" in line:
+            if "Number of Steps:" in line:
+                # steps = number of time steps
                 steps = int(lines[i +1])
 
-            if "Time evolution:" in line:
+            if "Time Evolution:" in line:
                 file1 = lines[i + 1]
+                # file1_split = name of the file that contains the observables time evolution
                 file1_split = file1.split('"')[1]
                 file2 = lines[i + 3]
+                # file2_split = name of the file that contains the MSD evolution.
                 file2_split = file2.split('"')[1]
                 file3 = lines[i + 7]
+                # file3_split = name of the file that contains the g(r) histogram
                 file3_split = file3.split('"')[1]
                 break
             i = i + 1
 
     return steps,file1_split,file2_split,file3_split
 
+# obtain the file names
 steps, file1_split, file2_split, file3_split = read_params(input_file)
 
+# this function reads the time, kinetic, potential, total (energies), temperature and pressure evolution from the input file
 def read_values(filename):
     with open(filename, "r") as f:
         lines = f.readlines()
@@ -56,8 +62,10 @@ def read_values(filename):
     
     return time, kin, pot, tot, temp, press
 
+# create the arrays that contain the observables evolution
 time, kin, pot, tot, temp, press = read_values(file1_split)
 
+# function that reads the evolution of MSD
 def read_msd(filename):
     with open(filename, "r") as f:
         lines = f.readlines()
@@ -76,8 +84,10 @@ def read_msd(filename):
 
     return time, sqr_dist
 
+# create the arrays that contain the MSD evolution
 time_dist, sqr_dist = read_msd(file2_split)
 
+# this function read the values of r and g(r) to generate the gofr histogram
 def read_gofr(filename):
     with open(filename, "r") as f:
         lines = f.readlines()
@@ -96,12 +106,13 @@ def read_gofr(filename):
 
     return position, gofr
 
+# # create the arrays that contain the gofr histogram
 position, gofr = read_gofr(file3_split)
 
 # generate figures
 plt.xlim(0,time[-1])
 plt.xlabel("Time (ps)")
-plt.ylabel("Energy (kJ/mol")
+plt.ylabel("Energy (kJ/mol)")
 plt.plot(time,kin, label="Kinetic Energy")
 plt.plot(time,pot, label="Potential Energy")
 plt.plot(time,tot, label="Total Energy")
