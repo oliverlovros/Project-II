@@ -27,76 +27,76 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#Pre-requirements">Pre-requirements</a></li>
-    <li><a href="#Installation">Installation</a></li>
+    <li><a href="#Usage">Usage</a></li>
+    <li><a href="#wiki">Wiki</a></li>
     <li><a href="#Distribution-of-tasks">Distribution of tasks</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
-
 
 
 <!-- Pre-requirements -->
 ### Pre-requirements 📋
 
-_Que cosas necesitas para instalar el software y como instalarlas_
+In order to run the program it is necessary to have the following requirements installed:
 
-```
-sudo apt install python3.8
-sudo apt-get install gfortran
-```
-You also need/want to install VMD software
-For installation following the steps below: Download it from (http://www.ks.uiuc.edu/Research/vmd/) Then in the terminal type:
-```
-cd Downloads
-  tar -zxvf vmd-1.9.1.bin.LINUXAMD64.opengl.tar.gz
-```
-This will extract the folder to your downloads folder. You can then just
-```
-cd vmd-1.9.1
+The program is written in Fortran language so a compiler like [gfortran](https://gcc.gnu.org/wiki/GFortran) or equivalent is needed.
 
-./configure LINUXAMD64
+Python programs are used to perform statistical analysis of the obtained data. Therefore, Python version 3 or higher is required. Also, for python programs to work properly the following libraries are needed:
 
-cd src
+- [Numpy](https://numpy.org)
+- [Matplotlib](https://matplotlib.org)
+- [Sys](https://docs.python.org/3/library/sys.html)
 
-sudo make install
-```
+To be able to use these libraries, it is recommended to work with anaconda environment.
 
-<!-- Installation -->
-## Installation 🔧
+In case the user wishes to see the trajectory generated in the simulation program, the use of the [VMD](https://www.ks.uiuc.edu/Research/vmd/) program is recommended.
 
-Use  to install the program.
-
-Ex:
-```bash
-pip install foobar
-```
 <!-- Usage -->
 ## Usage ⚙️
-In the Working_area directory
+In order to run this program, the necessary files are found in the [Working_area](https://github.com/Eines-Informatiques-Avancades/Project-II/tree/master/Working_Area) directory.
+
+This directory contains the following files:
+
+- **Makefile**: Compiles and executes the whole program. It is also designed to manage all the generated files for a more user-friendly experience.
+- **parameters.txt**: Data file that contains all the parameters related to the system of study (Number of particles, geometry of the lattice, density, mass,...), the data related to the simulation (Initial temperature, initial distribution, thermostat, integration method,...) and a final section where the names of the output data files are defined. Additionaly, this file contains the necessary parameters in order to run correctly the radial distribution function (g(r)) calculation. 
+
+To start using the program, the following command has to be used:
 ```
-#make usage
-make modulos
 make all
-
-#to visualize...
-vmd (explain)
-python
-import foobar
-
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
 ```
+This will compile and execute the program and all the statistic calculations will also be performed. It is **important** to point out that in order to perform the whole program, the user is asked a couple of questions related to the statistical study, so keep an eye on this, otherwise the program will not reach completion.
+
+Once the process has been completed, the unnecessary files are cleaned and the output files are sent to their corresponding directories (Results -> Data and Figures).
+
+**Note**: Due to the modular nature of the program, it can be executed in parts (or modules) by using the following commands:
+
+```
+# Compilation of the Main program and the gofr module (Fortran programming language)
+make compile
+
+# Execution of the Main program and the gofr module (Fortran programming language)
+make run
+
+# Computes the statistical analysis and generates the corresponding figures as outputs (Python programming language)
+make statistic
+
+# Data files and figures (outputs) to  the Results folder
+make move
+
+# Removes objects, executables and unnecessary .mod files
+make clean
+```
+
+To visualize the trajectory of the system, VMD software is needed.
+
+
+## Wiki 📖
+
+...Work in progress...
+
+
 <!-- DISTRIBUTION OF TASKS -->
 ## Distribution of tasks ✒️ 
 Project coordinator: Àlex Teruel
@@ -112,17 +112,12 @@ Project coordinator: Àlex Teruel
 
 The joint work tasks will be carried out (to a greater extent) by those members who are more advanced in their corresponding tasks.
 
-## Wiki 📖
-
-Puedes encontrar mucho más de cómo utilizar este proyecto en nuestra [Wiki](https://github.com/Eines-Informatiques-Avancades/Project-II/wiki)
 
 <!-- CONTRIBUTING -->
 ## Contributing 🖇️
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-
 
 
 <!-- LICENSE -->
