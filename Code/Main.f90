@@ -58,8 +58,10 @@ program Main
 
     if (integrator == "Verlet") then
         integrator_num = 1
+        print*, "Verlet integrator"
     else ! Euler
         integrator_num = 0
+        print*, "Euler integrator"
     endif
 
     ! open files
@@ -92,6 +94,7 @@ program Main
     ! initialize the geometry
     if(geometry == "SC ") then
         call sc_lattice(nparts,rho,newpos,box_l,box_a,box_m)
+        print*, "SC geometry"
     else
         !call fcc_lattice(nparts,rho,newpos,box_l,box_a,box_m)
     endif
@@ -100,6 +103,7 @@ program Main
 
     if (thermostat == "Yes") then 
         therm_on = 1
+        print*, "Thermostat on, Temperature (K) = ", in_temp
     else
         therm_on = 0
     endif
@@ -107,8 +111,10 @@ program Main
     ! initialize velocities
     if (bimodal == "Yes") then
         call bimodal_vel(nparts,temp_init,vel)
+        print*, "Initial velocities: Bimodal distribution at Temperature = ", in_temp_init
     else
         vel = 0d0
+        print*, "Initial velocities equal to zero"
     endif
 
     ! generate gofr input file
@@ -116,6 +122,7 @@ program Main
 
     ! mess up the system
     if (disordered_system == "Yes") then
+        print*, "Disordered system at Temperature = ", in_temp_init 
         call LJ_potential(nparts,newpos,cutoff,box_l,1, pot, force)
         nu = 5.d0*dt
         sigma = dsqrt(temp_init)
