@@ -36,7 +36,7 @@ module Integrator_module
            ! If the random number < nu, new velocities are calculated
            if (nu_n < nu) then
                ! The gaussians are calculated using the Box-Muller method
-               call random_number(x1); call random_number(x1); call random_number(x3); call random_number(x4)
+               call random_number(x1); call random_number(x2); call random_number(x3); call random_number(x4)
                velocities(n,1) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dcos(2.d0*pi*x2)
                velocities(n,2) = sigma*dsqrt(-2.d0*(dlog(1.d0-x1)))*dsin(2.d0*pi*x2)
                velocities(n,3) = sigma*dsqrt(-2.d0*(dlog(1.d0-x3)))*dcos(2.d0*pi*x4)
