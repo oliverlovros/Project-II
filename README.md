@@ -120,7 +120,7 @@ The joint work tasks will be carried out (to a greater extent) by those members 
 
 ### What is that paralel file? Wasn't the program a serie algorithm?
 
-Paralel directory is an alghorith using mpi, so you have a paralelize version of the program in this file
+Paralel directory is a program that uses mpi, so you have a paralelize version of the program in this file.
 
 
 <!-- CONTRIBUTING -->
