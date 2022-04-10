@@ -1,6 +1,7 @@
 program Main
 
     ! modules
+    use paralel
     use Constants_module
     use Initial_state_module
     use Pbc_module
@@ -55,7 +56,7 @@ program Main
     infile = "parameters.txt"
     call Read_parameters(infile, nparts, geometry, in_rho, mass, LJ_sig, LJ_eps, cutoff, in_temp, in_temp_init, bimodal, &
     disordered_system, thermostat, integrator, in_dt, steps, measure_steps, boxes,  outfile1, outfile2, outfile3, outfile4)
-call  inputs_paralelizacion(nparts)
+call  paralel_particle_distribution(nparts)
     if (integrator == "Verlet") then
         integrator_num = 1
         print*, "Verlet integrator"
