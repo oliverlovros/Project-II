@@ -1,6 +1,7 @@
 program Main
 
     ! modules
+    use paralel
     use Constants_module
     use Initial_state_module
     use Pbc_module
@@ -63,7 +64,7 @@ program Main
     call Read_parameters(infile, nparts, geometry, in_rho, mass, LJ_sig, LJ_eps, cutoff, in_temp, in_temp_init, bimodal, &
     disordered_system, thermostat, integrator, in_dt, init_steps, steps, measure_steps, traj_steps, boxes,  outfile1, outfile2, &
     outfile3, outfile4)
-
+    call paralel_particle_distribution(nparts)
     ! open files
     open(12,file=outfile1)  ! observables evolution
     open(13,file=outfile2)  ! mean square displacement
