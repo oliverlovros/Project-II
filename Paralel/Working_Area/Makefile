@@ -40,7 +40,7 @@ constantes: $(OTHERDIR_MOD)/Constants_module.f90
 #------------------------------------------------------
 #------------------------------------------------------
 paralel: $(OTHERDIR_MOD)/paralel.f90
-	@gfortran -c $(OTHERDIR_MOD)/paralel.f90 -o $(OTHERDIR_MAIN)/paralel.o 
+	@mpif90 -c $(OTHERDIR_MOD)/paralel.f90 -o $(OTHERDIR_MAIN)/paralel.o 
 #------------------------------------------------------
 #------------------------------------------------------
 #------------------------------------------------------
