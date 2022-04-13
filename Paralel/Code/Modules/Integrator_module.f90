@@ -32,7 +32,7 @@ module Integrator_module
        double precision :: nu_n, x1, x2, x3, x4
        integer :: n
 
-       do n = 1, nparts
+       do n = particles(rank,1), particles(rank,2)
            call random_number(nu_n)
            ! If the random number < nu, new velocities are calculated
            if (nu_n < nu) then
