@@ -31,7 +31,7 @@ def blockAverage(datos,nome,tamaño_bloque_maximo=False,grafica=True):
     Nobs = len(datos) # número total de datos, dar un array ou lista
     tamaño_bloque_minimo=1 # mínimo tamaño de bloque, corresponde a non facer block_avarage
     if tamaño_bloque_maximo==False:
-        tamaño_bloque_maximo=int(Nobs/4)#Criterio por se non se selecciona un dato óptimo de bloque
+        tamaño_bloque_maximo=int(Nobs/10)#Criterio por se non se selecciona un dato óptimo de bloque
     Numero_de_bloques = tamaño_bloque_maximo-tamaño_bloque_minimo # total number of block sizes
     Media_bloque = np.zeros(Numero_de_bloques) 
     co = np.zeros(Numero_de_bloques) # definese no seguinte papper, pero é a varianza
