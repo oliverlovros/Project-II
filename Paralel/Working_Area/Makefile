@@ -1,5 +1,15 @@
-SHELL := /bin/bash # necessary to use "time" shell command
-# define variables
+# Parallel version of the Makefile for the Molecular Dynamics simulation
+
+# MPI Compiler
+
+mpi_comp = mpif90
+
+# MPI run
+
+mpi_exe = mpirun
+
+# Some path and object variables are defined
+
 OTHERDIR_MAIN=../Code
 
 OTHERDIR_MOD=../Code/Modules
@@ -8,82 +18,32 @@ OTHERDIR_RESULTS=../Results/Data
 
 OTHERDIR_FIG=../Results/Figures
 
-MOD_ORDENADOS=../Code/Modules/Constants_module.f90 ../Code/Modules/Pbc_module.f90 ../Code/Modules/Initial_state_module.f90 ../Code/Modules/Forces_module.f90 ../Code/Modules/Integrator_module.f90 ../Code/Modules/Gofr_module.f90
+MOD_ORDENADOS=../Code/Modules/Parallel_module.f90 ../Code/Modules/Constants_module.f90 ../Code/Modules/Pbc_module.f90 ../Code/Modules/Initial_state_module.f90 ../Code/Modules/Forces_module.f90 ../Code/Modules/Integrator_module.f90 ../Code/Modules/Gofr_module.f90 ../Code/Main.f90
 
-OBJS= $(OTHERDIR_MAIN)/paralel.o $(OTHERDIR_MAIN)/constantes.o $(OTHERDIR_MAIN)/initial_state.o $(OTHERDIR_MAIN)/pbc.o $(OTHERDIR_MAIN)/forces.o $(OTHERDIR_MAIN)/integrator.o $(OTHERDIR_MAIN)/gofr.o $(OTHERDIR_MAIN)/main.o
 
-#----------------------------------------------------------------------------------------------------------------------------------#
+all: compile exe statistics move clean
+run: compile exe
 
-## Information about how to use this makefile.
-##
-## Option 1: After entering the parameters in parameters.txt, you can use make all to realize the whole process: Simulation + Statistical analysis + Figures.
-##           If you use this method, the data will automatically be saved in the folder Results/Data and the figures in the folder Results/Figures.
-##           Additionally, the unnecessary files will be removed.
-##
-## Option 2: After entering the parameters in parameters.txt, you can use the commands that are explained below to realize the process step by step (less practical in my opinion).
-##           If you want to do this, you must keep in mind that you only can analyse files that are in this folder, so do not use the move command until you have analysed the files.
-##           Additionally, statistical analysis programs work with the files that are specified in parameters.txt, so make sure the file names are correct.
-##
-## Commands
-##
-## all       : compile fortran code, run the code, realize the statistical analysis and the figures, move the results to their folder and remove the useless files.
-all: compile run statistics move clean
+compile: $(MOD_ORDENADOS)
+	$(mpi_comp) -g $(MOD_ORDENADOS) -o program.exe
 
-## compile   : compile the fortran code.
-compile: constantes paralel initial_state pbc forces integrator gofr main program 
+exe:
+	source execution.sh
 
-constantes: $(OTHERDIR_MOD)/Constants_module.f90
-	@gfortran -c $(OTHERDIR_MOD)/Constants_module.f90 -o $(OTHERDIR_MAIN)/constantes.o
-
-#------------------------------------------------------
-#------------------------------------------------------
-#------------------------------------------------------
-#------------------------------------------------------
-paralel: $(OTHERDIR_MOD)/paralel.f90
-	@mpif90 -c $(OTHERDIR_MOD)/paralel.f90 -o $(OTHERDIR_MAIN)/paralel.o 
-#------------------------------------------------------
-#------------------------------------------------------
-#------------------------------------------------------
-#------------------------------------------------------
-initial_state: $(OTHERDIR_MOD)/Initial_state_module.f90 $(OTHERDIR_MOD)/Constants_module.f90
-	@gfortran -c $(OTHERDIR_MOD)/Initial_state_module.f90 -o $(OTHERDIR_MAIN)/initial_state.o
-
-pbc: $(OTHERDIR_MOD)/Pbc_module.f90 $(OTHERDIR_MOD)/Constants_module.f90
-	@gfortran -c $(OTHERDIR_MOD)/Pbc_module.f90 -o $(OTHERDIR_MAIN)/pbc.o
-
-forces: $(OTHERDIR_MOD)/Forces_module.f90 $(OTHERDIR_MOD)/Pbc_module.f90 $(OTHERDIR_MOD)/Constants_module.f90
-	@gfortran -c $(OTHERDIR_MOD)/Forces_module.f90 -o $(OTHERDIR_MAIN)/forces.o	
-
-integrator: $(OTHERDIR_MOD)/Integrator_module.f90 $(OTHERDIR_MOD)/Forces_module.f90 $(OTHERDIR_MOD)/Pbc_module.f90 $(OTHERDIR_MOD)/Constants_module.f90
-	@gfortran -c $(OTHERDIR_MOD)/Integrator_module.f90 -o $(OTHERDIR_MAIN)/integrator.o
-
-gofr: $(OTHERDIR_MOD)/Gofr_module.f90 $(OTHERDIR_MOD)/Integrator_module.f90 $(OTHERDIR_MOD)/Forces_module.f90 $(OTHERDIR_MOD)/Pbc_module.f90 $(OTHERDIR_MOD)/Constants_module.f90
-	@gfortran -c $(OTHERDIR_MOD)/Gofr_module.f90 -o $(OTHERDIR_MAIN)/gofr.o
-
-main: $(OTHERDIR_MAIN)/Main.f90 $(MOD_ORDENADOS)
-	@mpif90 -g -o $(OTHERDIR_MAIN)/main.o $(OTHERDIR_MAIN)/Main.f90
-	
-program: $(OBJS)
-	@mpirun -np 4 program.exe $(OBJS)
-
-## run       : run the fortran code.
-run: 
-	@time ./program.exe
-
-## statistics: realize the statistical analysis and the figures. You will be asked some questions.
+# statistics: Statistical analysis is performed and the figures are generated. You will be asked some questions.
 .PHONY: statistics
 statistics:
 	@python $(OTHERDIR_MAIN)/generate_figures.py parameters.txt
 	@python $(OTHERDIR_MAIN)/Block_avarage.py parameters.txt
 
-## move      : move the results (files .dat and .png) to Results folder (Data and Figures).
+# move  : Results files (extensions .dat and .png) are moved to Results folders (Data and Figures).
 .PHONY: move	
 move: 
 	@mv *.dat $(OTHERDIR_RESULTS)
 	@mv *.png $(OTHERDIR_FIG)
 	@mv *.xyz $(OTHERDIR_RESULTS)
 
-## clean     : remove objects, executables and modules.
+# clean : Objects, executables and modules are removed.
 .PHONY: clean
 clean:
 	@rm -f $(OTHERDIR_MAIN)/*.o
@@ -92,7 +52,7 @@ clean:
 	@rm -f *.exe
 	@rm -f *.mod
 
-## clean_all : remove the same than clean and, additionally, the results and figures (the repository returns to its original state).
+# clean_all : Same as "clean" and, additionally, the results and figures are also deleted (the repository returns to its original state).
 .PHONY: clean_all
 clean_all:
 	@rm -f $(OTHERDIR_RESULTS)/*
@@ -106,13 +66,8 @@ clean_all:
 	@rm -f *.exe
 	@rm -f *.mod
 
-# not available 
-#.PHONY: vmd
-#vmd:
-#	vmd $(OTHERDIR_RESULTS)/vmd.xyz
 
-##
-## The commands are explained in the order in which it is recommended to use them (if you want to use option 2).
+# The commands are explained in the order in which it is recommended to use them (if you want to use option 2).
 
 .PHONY : help
 help :
