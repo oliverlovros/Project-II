@@ -44,26 +44,30 @@ all: compile exe statistics move clean
 
 run: compile exe
 
+## compile : compiles the fortran code
+
 compile: $(MOD_ORDENADOS)
 	$(mpi_comp) -g $(MOD_ORDENADOS) -o program.exe
+
+## exe   : runs the program
 
 exe:
 	source execution.sh
 
-# statistics: Statistical analysis is performed and the figures are generated. You will be asked some questions.
+## statistics: Statistical analysis is performed and the figures are generated. You will be asked some questions.
 .PHONY: statistics
 statistics:
 	@python $(OTHERDIR_MAIN)/generate_figures.py parameters.txt
 	@python $(OTHERDIR_MAIN)/Block_avarage.py parameters.txt
 
-# move  : Results files (extensions .dat and .png) are moved to Results folders (Data and Figures).
+## move  : Results files (extensions .dat and .png) are moved to Results folders (Data and Figures).
 .PHONY: move	
 move: 
 	@mv *.dat $(OTHERDIR_RESULTS)
 	@mv *.png $(OTHERDIR_FIG)
 	@mv *.xyz $(OTHERDIR_RESULTS)
 
-# clean : Objects, executables and modules are removed.
+## clean : Objects, executables and modules are removed.
 .PHONY: clean
 clean:
 	@rm -f $(OTHERDIR_MAIN)/*.o
@@ -72,7 +76,7 @@ clean:
 	@rm -f *.exe
 	@rm -f *.mod
 
-# clean_all : Same as "clean" and, additionally, the results and figures are also deleted (the repository returns to its original state).
+## clean_all : Same as "clean" and, additionally, the results and figures are also deleted (the repository returns to its original state).
 .PHONY: clean_all
 clean_all:
 	@rm -f $(OTHERDIR_RESULTS)/*
@@ -87,7 +91,7 @@ clean_all:
 	@rm -f *.mod
 
 
-# The commands are explained in the order in which it is recommended to use them (if you want to use option 2).
+## The commands are explained in the order in which it is recommended to use them (if you want to use option 2).
 
 .PHONY : help
 help :
