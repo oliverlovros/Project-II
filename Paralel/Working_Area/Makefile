@@ -20,8 +20,28 @@ OTHERDIR_FIG=../Results/Figures
 
 MOD_ORDENADOS=../Code/Modules/Parallel_module.f90 ../Code/Modules/Constants_module.f90 ../Code/Modules/Pbc_module.f90 ../Code/Modules/Initial_state_module.f90 ../Code/Modules/Forces_module.f90 ../Code/Modules/Integrator_module.f90 ../Code/Modules/Gofr_module.f90 ../Code/Main.f90
 
+#----------------------------------------------------------------------------------------------------------------------------------#
+
+## Information about how to use this makefile.
+##
+## Option 1: After entering the parameters in parameters.txt, you can use make all to realize the whole process: Simulation + Statistical analysis + Figures.
+##           If you use this method, the data will automatically be saved in the folder Results/Data and the figures in the folder Results/Figures.
+##           Additionally, the unnecessary files will be removed.
+##
+## Option 2: After entering the parameters in parameters.txt, you can use the commands that are explained below to realize the process step by step (less practical in my opinion).
+##           If you want to do this, you must keep in mind that you only can analyse files that are in this folder, so do not use the move command until you have analysed the files.
+##           Additionally, statistical analysis programs work with the files that are specified in parameters.txt, so make sure the file names are correct.
+
+#----------------------------------------------------------------------------------------------------------------------------------#
+
+## Commands
+
+## all   : compile fortran code, run the code, realize the statistical analysis and the figures, move the results to their folder and remove the useless files.
 
 all: compile exe statistics move clean
+
+## run   : compiles the fortran code and runs the program.
+
 run: compile exe
 
 compile: $(MOD_ORDENADOS)
