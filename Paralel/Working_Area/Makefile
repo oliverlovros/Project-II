@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 # Parallel version of the Makefile for the Molecular Dynamics simulation
 
 # MPI Compiler
