@@ -53,6 +53,8 @@ To be able to use these libraries, it is recommended to work with anaconda envir
 
 In case the user wishes to see the trajectory generated in the simulation program, the use of the [VMD](https://www.ks.uiuc.edu/Research/vmd/) program is recommended.
 
+The option of a parallelisable code can be used, using the code in the parallel folder. To use it, you must have the following installed on your operating system [Open MPI](https://www.open-mpi.org/)
+
 <!-- Usage -->
 ## Usage ⚙️
 In order to run this program, the necessary files are found in the [Working_area](https://github.com/Eines-Informatiques-Avancades/Project-II/tree/master/Working_Area) directory.
