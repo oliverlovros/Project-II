@@ -54,8 +54,9 @@ compile: $(MOD_ORDENADOS)
 ## exe   : runs the program
 
 exe:
-	source execution.sh
-
+	#./execution.sh
+	#source execution.sh
+	qsub execution_cluster.sh
 ## statistics: Statistical analysis is performed and the figures are generated. You will be asked some questions.
 .PHONY: statistics
 statistics:
