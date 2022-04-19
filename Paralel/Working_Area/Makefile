@@ -30,13 +30,17 @@ MOD_ORDENADOS=../Code/Modules/Parallel_module.f90 ../Code/Modules/Constants_modu
 
 ## Information about how to use this makefile.
 ##
-## Option 1: After entering the parameters in parameters.txt, you can use make all to realize the whole process: Simulation + Statistical analysis + Figures.
-##           If you use this method, the data will automatically be saved in the folder Results/Data and the figures in the folder Results/Figures.
-##           Additionally, the unnecessary files will be removed.
+## Option 1:  After entering the parameters in parameters.txt, you can use make all to realize the whole process: Simulation + Statistical analysis + Figures.
+##            If you use this method, the data will automatically be saved in the folder Results/Data and the figures in the folder Results/Figures.
+##            Additionally, the unnecessary files will be removed.
 ##
-## Option 2: After entering the parameters in parameters.txt, you can use the commands that are explained below to realize the process step by step (less practical in my opinion).
-##           If you want to do this, you must keep in mind that you only can analyse files that are in this folder, so do not use the move command until you have analysed the files.
-##           Additionally, statistical analysis programs work with the files that are specified in parameters.txt, so make sure the file names are correct.
+## Option 2:  After entering the parameters in parameters.txt, you can use the commands that are explained below to realize the process step by step (less practical in my opinion).
+##            If you want to do this, you must keep in mind that you only can analyse files that are in this folder, so do not use the move command until you have analysed the files.
+##            Additionally, statistical analysis programs work with the files that are specified in parameters.txt, so make sure the file names are correct.
+##
+## Send Jobs: If you want to submit a job to a remote cluster, you can use this option (be sure the cluster has the MPI module). After entering the parameters in parameters.txt and
+##            properly modify the script execution_cluster.sh (number of processors and job name basically), write "Make send_job". This command will send the job (only the simulation
+##            part).
 
 #----------------------------------------------------------------------------------------------------------------------------------#
 
@@ -55,11 +59,11 @@ run: compile exe
 exe:
 	source execution.sh
 
-## send_job :
+## send_job : compiles the program and send a job.
 
 send_job: compile exe_cluster
 
-## exe_cluster   : runs the program
+## exe_cluster   : send a job.
 
 exe_cluster:
 	qsub execution_cluster.sh
