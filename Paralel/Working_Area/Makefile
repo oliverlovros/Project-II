@@ -1,3 +1,4 @@
+SHELL := /bin/bash # necessary to use "time" shell command
 # Parallel version of the Makefile for the Molecular Dynamics simulation
 
 # MPI Compiler

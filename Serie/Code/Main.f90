@@ -96,9 +96,9 @@ program Main
     dnparts = dble(nparts)
     lconv = LJ_sig
     econv = LJ_eps/dnparts
-    rhoconv = 1d24*mass/(navo*LJ_sig**3)
-    tempconv = LJ_eps/(navo*kbol)
-    pconv = 1d33*LJ_eps/(navo*LJ_sig**3d0)
+    rhoconv = 1d24*mass/(avogadro*LJ_sig**3)
+    tempconv = LJ_eps/(avogadro*boltzmann)
+    pconv = 1d33*LJ_eps/(avogadro*LJ_sig**3d0)
     timeconv = 0.1d0*(mass*LJ_sig**2d0/LJ_eps)**0.5d0
 
     ! calculate parameters in reduced units

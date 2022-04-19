@@ -9,13 +9,14 @@ implicit none
 contains
 
 subroutine LJ_potential(npart,positions,cutoff,length,pbc_on,Upot,force)
+
     implicit none
     integer, intent(in) :: npart, pbc_on
     double precision, intent(in) :: positions(npart,3), cutoff, length
     double precision :: Upot, force(npart,3)
     integer :: i, j, k
     integer :: part_1, part_2
-    double precision :: dr(3), dr2, dr6, dr8, dr12, dr14
+    double precision :: dr(3), dr2, diff
     double precision :: fx, fy, fz, ftot(npart,3)
 
     force = 0.d0
@@ -23,38 +24,39 @@ subroutine LJ_potential(npart,positions,cutoff,length,pbc_on,Upot,force)
     
     do i=interactions(rank,1),interactions(rank,2)
 
-      part_1=particles_interaction(i,1)
-      part_2=particles_interaction(i,2)
+        part_1=particles_interaction(i,1)
+        part_2=particles_interaction(i,2)
 
-      !dr = positions(part_1,:) - position(part_2,:)
-      dr(1) = positions(part_1,1) - positions(part_2,1)
-      dr(2) = positions(part_1,2) - positions(part_2,2)
-      dr(3) = positions(part_1,3) - positions(part_2,3)
+        ! difference of positions
+        dr(1) = positions(part_1,1) - positions(part_2,1)
+        dr(2) = positions(part_1,2) - positions(part_2,2)
+        dr(3) = positions(part_1,3) - positions(part_2,3)
 
-      ! PBC are applied
+        ! PBC are applied
         call pbc(dr,length)
 
-      ! Distance calculation
+        ! Distance calculation
         dr2 = dr(1)**2 + dr(2)**2 + dr(3)**2
 
-        !print*, dr2
-
-      ! Cutoff correction
+        ! Cutoff correction
         if(dr2 <= cutoff**2) then
-                dr6 = dr2**3
-                dr8 = dr2**4
-                dr12 = dr2**6
-                dr14 = dr2**7
-                ! Potential energy
-                Upot = Upot+4.d0*(1.d0/dr12 - 1.d0/dr6) - 4.d0*( 1.d0/cutoff**12 - 1.d0/cutoff**6)
-                ! Force part_1
-                force(part_1,1) = force(part_1,1) + (48.d0/dr14 - 24.d0/dr8)*dr(1)
-                force(part_1,2) = force(part_1,2) + (48.d0/dr14 - 24.d0/dr8)*dr(2)
-                force(part_1,3) = force(part_1,3) + (48.d0/dr14 - 24.d0/dr8)*dr(3)
-                ! Force part_2
-                force(part_2,1) = force(part_2,1) - (48.d0/dr14 - 24.d0/dr8)*dr(1)
-                force(part_2,2) = force(part_2,2) - (48.d0/dr14 - 24.d0/dr8)*dr(2)
-                force(part_2,3) = force(part_2,3) - (48.d0/dr14 - 24.d0/dr8)*dr(3)
+
+            diff = (48.d0/dr2**7 - 24.d0/dr2**4)
+            ! force
+            fx = diff*dr(1)
+            fy = diff*dr(2)
+            fz = diff*dr(3)
+            ! Force part_1
+            force(part_1,1) = force(part_1,1) + fx
+            force(part_1,2) = force(part_1,2) + fy
+            force(part_1,3) = force(part_1,3) + fz
+            ! Force part_2
+            force(part_2,1) = force(part_2,1) - fx
+            force(part_2,2) = force(part_2,2) - fy
+            force(part_2,3) = force(part_2,3) - fz
+            ! Potential energy
+            Upot = Upot+4.d0*(1.d0/dr2**6 - 1.d0/dr2**3) - 4.d0*( 1.d0/cutoff**12 - 1.d0/cutoff**6)
+
         end if
     end do
     
@@ -63,7 +65,6 @@ subroutine LJ_potential(npart,positions,cutoff,length,pbc_on,Upot,force)
 
     force = ftot
 
-    !print*, rank, force(1,1), force(1,2), force(1,3), Upot
     return 
 end subroutine LJ_potential
 
@@ -98,6 +99,7 @@ subroutine Kinetic_Energy(nparts,velocity,kin_E)
         kin_E = kin_E + 0.5d0*vel2
     end do
     call MPI_allreduce(kin_E,kin_E,1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,ierror)
+
     return
    
 end subroutine Kinetic_Energy
@@ -105,6 +107,7 @@ end subroutine Kinetic_Energy
 
 
 subroutine pressure(n,rho,temp,l,cutoff,positions,pres)
+  
     implicit none
     ! Variables
     integer :: n
