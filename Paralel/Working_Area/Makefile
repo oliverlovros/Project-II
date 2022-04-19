@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 SHELL := /bin/bash # necessary to use "time" shell command
+=======
+SHELL := /bin/bash
+
+>>>>>>> daa593061f819789939bf122ed83c7c41a02ba28
 # Parallel version of the Makefile for the Molecular Dynamics simulation
 
 # MPI Compiler
@@ -45,15 +50,25 @@ all: compile exe statistics move clean
 
 run: compile exe
 
+## exe   : runs the program
+
+exe:
+	source execution.sh
+
+## send_job :
+
+send_job: compile exe_cluster
+
+## exe_cluster   : runs the program
+
+exe_cluster:
+	qsub execution_cluster.sh
+
 ## compile : compiles the fortran code
 
 compile: $(MOD_ORDENADOS)
 	$(mpi_comp) -g $(MOD_ORDENADOS) -o program.exe
 
-## exe   : runs the program
-
-exe:
-	source execution.sh
 
 ## statistics: Statistical analysis is performed and the figures are generated. You will be asked some questions.
 .PHONY: statistics
